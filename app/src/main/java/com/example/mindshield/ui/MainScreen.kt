@@ -43,7 +43,7 @@ fun MainScreen() {
                 }
                 TabItem(AppTab.SHIELD, Icons.Outlined.Shield, "Shield")
                 TabItem(AppTab.INSIGHT, Icons.Outlined.BarChart, "Insight")
-                TabItem(AppTab.INTERVENTION, Icons.Outlined.Tune, "Tune")
+                TabItem(AppTab.INTERVENTION, Icons.Outlined.Tune, "Intervention")
                 TabItem(AppTab.PROFILE, Icons.Outlined.Person, "Profile")
             }
         }

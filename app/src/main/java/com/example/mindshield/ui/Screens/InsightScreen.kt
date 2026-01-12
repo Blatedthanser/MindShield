@@ -77,6 +77,9 @@ fun InsightScreen() {
                         verticalAlignment = Alignment.Bottom,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        val hourlyMax = remember(HOURLY_STRESS_DATA) {
+                            HOURLY_STRESS_DATA.maxOfOrNull { it.value } ?: 0
+                        }
                         HOURLY_STRESS_DATA.forEach { data ->
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                                 Box(
@@ -84,7 +87,7 @@ fun InsightScreen() {
                                         .width(24.dp)
                                         .height((data.value * 15).dp)
                                         .background(
-                                            if (data.value > 6) Orange600 else Color(0xFFA8A29E),
+                                            if (data.value == hourlyMax) Orange600 else Color(0xFFA8A29E),
                                             RoundedCornerShape(4.dp, 4.dp, 0.dp, 0.dp)
                                         )
                                 )
