@@ -10,12 +10,12 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.mindshield.R
+import com.example.mindshield.data.repository.CurrentData
 import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
@@ -51,11 +51,18 @@ class MindShieldService : Service() {
 
         // 3. Start collecting data (Launch in our custom scope)
         serviceScope.launch {
+            var lastUpdate = System.currentTimeMillis()
             wearableSource.observeData().collect { data ->
+                val now = System.currentTimeMillis()
                 // This runs in the background
-                println("CORE SERVICE: HR=${data.heartRate} bpm")
-
+                println("CORE SERVICE: HR=${data.hr} bpm")
+                println("CORE SERVICE: HRV=${data.hrv}")
                 // TODO: Feed this data into your 'PhysiologicalAnalyzer' here
+                if (now - lastUpdate >= 5_000) { // ~5 seconds
+                    CurrentData.updateData(data)
+                    lastUpdate = now
+                }
+
             }
         }
 
@@ -69,8 +76,8 @@ class MindShieldService : Service() {
 
         // Pseudo-code for data flow:
         // wearableManager.connect()
-        // wearableManager.onHeartRateReceived = { heartRate ->
-        //      PhysiologicalAnalyzer.analyze(heartRate)
+        // wearableManager.onHeartRateReceived = { hr ->
+        //      PhysiologicalAnalyzer.analyze(hr)
         // }
     }
 

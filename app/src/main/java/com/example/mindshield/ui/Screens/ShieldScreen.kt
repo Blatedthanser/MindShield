@@ -18,12 +18,15 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.mindshield.data.repository.CurrentData
 import com.example.mindshield.model.StressLevel
 import com.example.mindshield.ui.theme.*
 import kotlinx.coroutines.delay
 
 @Composable
 fun ShieldScreen() {
+    val liveData by CurrentData.currentData.collectAsState()
+
     var heartRate by remember { mutableIntStateOf(72) }
     var stressLevel by remember { mutableStateOf(StressLevel.CALM) }
 
@@ -105,7 +108,7 @@ fun ShieldScreen() {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.dp))
-                    Text("$heartRate", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
+                    Text("${liveData.hr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
                     Text("BPM", fontSize = 14.sp, color = Stone500)
                     Text(
                         text = if (stressLevel == StressLevel.HIGH) "HIGH STRESS" else "RESILIENT",

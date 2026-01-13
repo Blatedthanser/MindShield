@@ -14,8 +14,9 @@ data class EmotionalEvent(
 )
 
 data class WearableData(
-    val heartRate: Int,      // e.g., 75 bpm
+    val hr: Int,      // e.g., 75 bpm
     val hrv: Int,            // e.g., 45 ms (Heart Rate Variability)
     val timestamp: Long = System.currentTimeMillis()
 )
+
 data class ChartDataPoint(val name: String, val value: Int)
