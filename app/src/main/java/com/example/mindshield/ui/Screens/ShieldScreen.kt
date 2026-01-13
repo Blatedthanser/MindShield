@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -27,21 +28,10 @@ import kotlinx.coroutines.delay
 fun ShieldScreen() {
     val liveData by CurrentData.currentData.collectAsState()
 
-    var heartRate by remember { mutableIntStateOf(72) }
-    var stressLevel by remember { mutableStateOf(StressLevel.CALM) }
-
-    // 模拟心率循环
-    LaunchedEffect(Unit) {
-        while (true) {
-            delay(2000)
-            val change = (-2..2).random()
-            heartRate = (heartRate + change).coerceIn(60, 130)
-            stressLevel = when {
-                heartRate > 100 -> StressLevel.HIGH
-                heartRate > 85 -> StressLevel.MODERATE
-                else -> StressLevel.CALM
-            }
-        }
+    val stressLevel: StressLevel = when {
+        liveData.hr > 100 -> StressLevel.HIGH
+        liveData.hr > 85 -> StressLevel.MODERATE
+        else -> StressLevel.CALM
     }
 
     // 呼吸动画
@@ -108,10 +98,14 @@ fun ShieldScreen() {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.dp))
-                    Text("${liveData.hr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
+                    Text("${if (liveData.hr == 0) "--" else liveData.hr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
                     Text("BPM", fontSize = 14.sp, color = Stone500)
                     Text(
-                        text = if (stressLevel == StressLevel.HIGH) "HIGH STRESS" else "RESILIENT",
+                        text = when (stressLevel) {
+                            StressLevel.HIGH -> "HIGH"
+                            StressLevel.MODERATE -> "MODERATE"
+                            StressLevel.CALM -> "CALM"
+                        },
                         fontSize = 12.sp,
                         color = themeColor,
                         fontWeight = FontWeight.Bold,
@@ -124,6 +118,36 @@ fun ShieldScreen() {
             Spacer(modifier = Modifier.height(48.dp))
 
             // Bottom Card
+            /*Card(
+                modifier = Modifier
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = White40),
+                border = BorderStroke(1.dp, Color.White.copy(0.5f))
+            ){
+                Column(Modifier.padding(20.dp)) {
+                    // Title Row
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(themeColor.copy(0.2f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Outlined.Psychology, null, tint = themeColor, modifier = Modifier.size(20.dp))
+                        }
+                        Spacer(Modifier.width(12.dp))
+                        Column {
+                            Text("Stress Level", color = Stone800, fontWeight = FontWeight.Medium)
+                            Text("${liveData.hrv}", color = Stone600, fontSize = 12.sp)
+                        }
+                    }
+                }
+            }*/
+
+
+            Spacer(modifier = Modifier.height(24.dp))
+
             Card(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
