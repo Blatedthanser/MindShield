@@ -42,10 +42,10 @@ class WearableSimulator : IWearableSource {
             currentHrv = currentHrv.coerceIn(10, 100)
 
             // Emit the new fake data
-            emit(WearableData(heartRate = currentHr, hrv = currentHrv))
+            emit(WearableData(hr = currentHr, hrv = currentHrv))
 
-            // Wait 1 second before next reading
-            delay(1000)
+            // Wait some time before next reading
+            delay(500)
         }
     }
 }
