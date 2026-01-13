@@ -1,4 +1,4 @@
-package com.example.mindshield.data
+package com.example.mindshield.data.source
 
 import com.example.mindshield.model.ChartDataPoint
 import com.example.mindshield.model.EmotionalEvent

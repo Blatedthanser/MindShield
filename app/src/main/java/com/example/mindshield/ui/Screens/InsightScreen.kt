@@ -23,7 +23,9 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mindshield.data.*
+import com.example.mindshield.data.source.APP_RANKING_DATA
+import com.example.mindshield.data.source.HOURLY_STRESS_DATA
+import com.example.mindshield.data.source.MOCK_EVENTS
 import com.example.mindshield.ui.theme.*
 
 @Composable
