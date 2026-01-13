@@ -14,6 +14,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.model.AppTab
+import com.example.mindshield.ui.Screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
 
