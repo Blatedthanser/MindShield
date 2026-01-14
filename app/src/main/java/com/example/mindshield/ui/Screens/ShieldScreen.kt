@@ -7,41 +7,31 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.material3.*
-import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.compositeOver
-import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.mindshield.data.repository.CurrentData
+import com.example.mindshield.data.repository.DynamicDataToShieldPage
+import com.example.mindshield.domain.analysis.MentalState
+import com.example.mindshield.domain.analysis.MentalState.*
 import com.example.mindshield.model.StressLevel
 import com.example.mindshield.ui.theme.*
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.compose
 
 @Composable
 fun ShieldScreen() {
-    val liveData by CurrentData.currentData.collectAsState()
+    val liveHr by DynamicDataToShieldPage.currentHr.collectAsState()
 
-    val stressLevel: StressLevel = when {
-        liveData.hrv == 0 -> StressLevel.CALM
-        liveData.hrv < 30 -> StressLevel.HIGH
-        liveData.hrv < 50 -> StressLevel.MODERATE
-        else -> StressLevel.CALM
-    }
-
+    val state by DynamicDataToShieldPage.currentState.collectAsState()
     // 呼吸动画
     val infiniteTransition = rememberInfiniteTransition(label = "breathing")
     val scale by infiniteTransition.animateFloat(
@@ -52,10 +42,11 @@ fun ShieldScreen() {
         ), label = "scale"
     )
 
-    val themeColor = when (stressLevel) {
-        StressLevel.HIGH -> Orange600
-        StressLevel.MODERATE -> Emerald800
-        StressLevel.CALM -> Emerald600
+    val themeColor = when (state) {
+        CALM_OR_HAPPY -> Emerald600
+        EXCITEMENT -> Emerald800
+        DISTRESS -> Orange600
+        NULL -> Emerald600
     }
 
     val animatedColor by animateColorAsState(
@@ -112,12 +103,12 @@ fun ShieldScreen() {
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.dp))
-                    Text("${if (liveData.hr == 0) "--" else liveData.hr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
+                    Text("${if (liveHr == 0) "--" else liveHr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
                     Text("BPM", fontSize = 14.sp, color = Stone500)
                     Text(
                         text = when  {
-                            liveData.hr > 120 -> "HIGH"
-                            liveData.hr > 70 -> "MODERATE"
+                            liveHr > 115 -> "HIGH"
+                            liveHr > 70 -> "MODERATE"
                             else -> "LOW"
                         },
                         fontSize = 12.sp,
@@ -147,13 +138,14 @@ fun ShieldScreen() {
                         .padding(10.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("HRV-Based Stress Level", color = Stone600, fontWeight = FontWeight.Medium, fontSize = 12.sp)
+                    Text("HRV-Based Mood Status", color = Stone600, fontWeight = FontWeight.Medium, fontSize = 12.sp)
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = when (stressLevel) {
-                            StressLevel.CALM -> "CALM"
-                            StressLevel.MODERATE -> "NORMAL"
-                            StressLevel.HIGH -> "STRESSFUL"
+                        text = when (state) {
+                            CALM_OR_HAPPY -> "CALM OR HAPPY"
+                            EXCITEMENT -> "EXCITEMENT"
+                            DISTRESS -> "DISTRESS"
+                            NULL -> "ANALIZING..."
                         },
                         color = Stone800,
                         fontWeight = FontWeight.Bold,

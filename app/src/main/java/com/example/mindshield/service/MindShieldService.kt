@@ -10,23 +10,23 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.mindshield.R
-import com.example.mindshield.data.repository.CurrentData
+import com.example.mindshield.data.repository.DynamicDataToShieldPage
 import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
+import com.example.mindshield.domain.analysis.MentalState
+import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
-// Import your data layer classes
-// import com.example.mindshield.data.source.WearableManager
 
 class MindShieldService : Service() {
 
 
     // 1. Initialize the interface (In the future, swap 'WearableSimulator()' with 'RealSdkWrapper()')
-    private val wearableSource: IWearableSource = WearableSimulator()
+    private val wearableSource: IWearableSource = WearableSimulator
 
     // Create a scope for background work
     private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
@@ -51,23 +51,46 @@ class MindShieldService : Service() {
 
         // 3. Start collecting data (Launch in our custom scope)
         serviceScope.launch {
+            val analyzer = WindowedStateAnalyzer()
+
             var lastUpdate = System.currentTimeMillis()
+            var lastClassification = System.currentTimeMillis()
+
             wearableSource.observeData().collect { data ->
                 val now = System.currentTimeMillis()
-                // This runs in the background
-                println("CORE SERVICE: HR=${data.hr} bpm")
-                println("CORE SERVICE: HRV=${data.hrv}")
-                // TODO: Feed this data into your 'PhysiologicalAnalyzer' here
-                if (now - lastUpdate >= 5_000) { // ~5 seconds
-                    CurrentData.updateData(data)
-                    lastUpdate = now
-                }
 
+                val smoothedState = analyzer.process(data)
+
+                println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")
+
+                // 3. Only proceed if we have enough data (Not NULL)
+                if (smoothedState != MentalState.NULL) {
+
+                    // Logic A: Trigger Intervention (Distress)
+                    if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 15_000)) {
+                        println("CORE SERVICE: Distress detected. Starting classification...")
+                        startTextClassification()
+                        lastClassification = now
+                    }
+
+                    // Logic B: Update UI (Throttled to 5 seconds)
+                    if (now - lastUpdate >= 5_000) {
+                        // Note: We send the 'Instant' HR (for display)
+                        // but the 'Smoothed' State (for color/status)
+                        DynamicDataToShieldPage.updateData(data.hr, smoothedState)
+                        lastUpdate = now
+                    }
+                }
             }
         }
 
         // If the system kills the service due to low memory, restart it automatically
         return START_STICKY
+    }
+
+    private fun startTextClassification() {
+        //TODO: screenShot()
+        //TODO: OCR()
     }
 
     private fun startDataCollection() {
