@@ -1,21 +1,28 @@
 package com.example.mindshield.ui.screens
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.rounded.SelfImprovement
 import androidx.compose.material3.*
+import androidx.compose.material3.AlertDialogDefaults.containerColor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.compositeOver
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,8 +36,9 @@ fun ShieldScreen() {
     val liveData by CurrentData.currentData.collectAsState()
 
     val stressLevel: StressLevel = when {
-        liveData.hr > 100 -> StressLevel.HIGH
-        liveData.hr > 85 -> StressLevel.MODERATE
+        liveData.hrv == 0 -> StressLevel.CALM
+        liveData.hrv < 30 -> StressLevel.HIGH
+        liveData.hrv < 50 -> StressLevel.MODERATE
         else -> StressLevel.CALM
     }
 
@@ -46,9 +54,15 @@ fun ShieldScreen() {
 
     val themeColor = when (stressLevel) {
         StressLevel.HIGH -> Orange600
-        StressLevel.MODERATE -> Color(0xFFB45309)
-        StressLevel.CALM -> Emerald700
+        StressLevel.MODERATE -> Emerald800
+        StressLevel.CALM -> Emerald600
     }
+
+    val animatedColor by animateColorAsState(
+        targetValue = themeColor,
+        animationSpec = tween(durationMillis = 1500),
+        label = "ColorAnimation"
+    )
 
     Column(
         modifier = Modifier
@@ -64,7 +78,7 @@ fun ShieldScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Watch, null, Modifier.size(14.dp), tint = themeColor)
+                Icon(Icons.Outlined.Watch, null, Modifier.size(14.dp), tint = animatedColor)
                 Spacer(Modifier.width(4.dp))
                 Text("Connected", fontSize = 12.sp, color = Stone600)
             }
@@ -87,27 +101,27 @@ fun ShieldScreen() {
             Box(contentAlignment = Alignment.Center) {
                 Box(modifier = Modifier
                     .size(300.dp)
-                    .background(Brush.radialGradient(listOf(themeColor.copy(0.2f), Color.Transparent))))
+                    .background(Brush.radialGradient(listOf(animatedColor.copy(0.2f), Color.Transparent))))
                 Box(modifier = Modifier
                     .size(256.dp)
                     .scale(scale)
-                    .border(2.dp, themeColor.copy(0.3f), CircleShape))
+                    .border(2.dp, animatedColor.copy(0.3f), CircleShape))
                 Box(modifier = Modifier
                     .size(192.dp)
-                    .border(4.dp, themeColor.copy(0.4f), CircleShape))
+                    .border(4.dp, animatedColor.copy(0.4f), CircleShape))
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.dp))
                     Text("${if (liveData.hr == 0) "--" else liveData.hr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
                     Text("BPM", fontSize = 14.sp, color = Stone500)
                     Text(
-                        text = when (stressLevel) {
-                            StressLevel.HIGH -> "HIGH"
-                            StressLevel.MODERATE -> "MODERATE"
-                            StressLevel.CALM -> "CALM"
+                        text = when  {
+                            liveData.hr > 120 -> "HIGH"
+                            liveData.hr > 70 -> "MODERATE"
+                            else -> "LOW"
                         },
                         fontSize = 12.sp,
-                        color = themeColor,
+                        color = animatedColor,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = 2.sp,
                         modifier = Modifier.padding(top = 8.dp)
@@ -115,36 +129,39 @@ fun ShieldScreen() {
                 }
             }
 
-            Spacer(modifier = Modifier.height(48.dp))
+            Spacer(modifier = Modifier.height(72.dp))
 
             // Bottom Card
-            /*Card(
+            Card(
                 modifier = Modifier
                     .padding(horizontal = 24.dp)
                     .fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = White40),
+                colors = CardDefaults.cardColors(containerColor = animatedColor.copy(alpha = 0.1f).compositeOver(BeigeBackground)),
                 border = BorderStroke(1.dp, Color.White.copy(0.5f))
-            ){
-                Column(Modifier.padding(20.dp)) {
-                    // Title Row
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .background(themeColor.copy(0.2f), CircleShape),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Outlined.Psychology, null, tint = themeColor, modifier = Modifier.size(20.dp))
-                        }
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text("Stress Level", color = Stone800, fontWeight = FontWeight.Medium)
-                            Text("${liveData.hrv}", color = Stone600, fontSize = 12.sp)
-                        }
-                    }
-                }
-            }*/
 
+            ){
+
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(10.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text("HRV-Based Stress Level", color = Stone600, fontWeight = FontWeight.Medium, fontSize = 12.sp)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = when (stressLevel) {
+                            StressLevel.CALM -> "CALM"
+                            StressLevel.MODERATE -> "NORMAL"
+                            StressLevel.HIGH -> "STRESSFUL"
+                        },
+                        color = Stone800,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 20.sp
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                }
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -161,7 +178,7 @@ fun ShieldScreen() {
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
-                                .background(themeColor.copy(0.2f), CircleShape),
+                                .background(animatedColor.copy(0.2f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
                             Icon(Icons.Outlined.VerifiedUser, null, tint = themeColor, modifier = Modifier.size(20.dp))
