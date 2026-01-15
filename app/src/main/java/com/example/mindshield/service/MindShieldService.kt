@@ -10,16 +10,19 @@ import android.os.IBinder
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.mindshield.R
+import com.example.mindshield.data.preferences.UserSettings
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
 import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState
+import com.example.mindshield.domain.analysis.PhysiologicalAnalyzer
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
 import com.example.mindshield.domain.calibration.UserBaseline
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
@@ -32,7 +35,7 @@ class MindShieldService : Service() {
     private val wearableSource: IWearableSource = WearableSimulator
 
     // Create a scope for background work
-    private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
+    private val serviceScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     private val CHANNEL_ID = "mindshield_service_channel"
 
@@ -41,6 +44,8 @@ class MindShieldService : Service() {
     override fun onCreate() {
         super.onCreate()
         println("MindShieldService: onCreate called (One-time setup)")
+        val settings = UserSettings(applicationContext)
+        PhysiologicalAnalyzer.observeSensitivity(serviceScope, settings)
 
         createNotificationChannel()
 
@@ -59,13 +64,13 @@ class MindShieldService : Service() {
         serviceScope.launch {
             val analyzer = WindowedStateAnalyzer()
 
-            var lastUpdate = System.currentTimeMillis()
+            var lastUpdate = System.currentTimeMillis() - 4000
             var lastClassification = System.currentTimeMillis()
 
             onboardingManager = OnboardingManager(applicationContext)
 
             while (true) {
-                if (!WearableSimulator.isConnected || !UserBaseline.isCalibrated || !onboardingManager.isOnboardingCompleted.first()) {
+                if (!WearableSimulator.isConnected || !onboardingManager.isOnboardingCompleted.first()) {
                     // suspend until connection comes back
                     delay(1000)
                     continue  // restart loop check
@@ -114,6 +119,8 @@ class MindShieldService : Service() {
         //TODO: screenShot()
         //TODO: OCR()
         //TODO: Classification
+        //TODO: Trigger Reminder (Put it in history
+
     }
 
 
@@ -169,5 +176,6 @@ class MindShieldService : Service() {
         super.onDestroy()
         wearableSource.disconnect()
         serviceScope.cancel() // Stop the loop
+
     }
 }

@@ -1,5 +1,10 @@
 package com.example.mindshield.domain.calibration
 
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+
 data class MetricStat(
     val mean: Double,
     val stdDev: Double
@@ -13,7 +18,22 @@ object UserBaseline {
     var pnn50 = MetricStat(15.0, 5.0)
     var lf = MetricStat(300.0, 100.0)
     var hf = MetricStat(250.0, 80.0)
-    var isCalibrated = false
+    private val _isCalibrated = MutableStateFlow(false)
+    val isCalibrated: StateFlow<Boolean> = _isCalibrated
+
+    fun setCalibrated(value: Boolean) {
+        _isCalibrated.value = value
+    }
+
+    fun reset() {
+        hr = MetricStat(65.0, 5.0)
+        rmssd = MetricStat(45.0, 10.0)
+        sdnn = MetricStat(55.0, 15.0)
+        pnn50 = MetricStat(15.0, 5.0)
+        lf = MetricStat(300.0, 100.0)
+        hf = MetricStat(250.0, 80.0)
+        _isCalibrated.value = false
+    }
 }
 
 data class BaselineSnapshot(

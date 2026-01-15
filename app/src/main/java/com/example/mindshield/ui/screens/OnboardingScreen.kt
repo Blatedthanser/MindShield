@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import com.example.mindshield.R
+import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.theme.BeigeBackground
 import com.example.mindshield.ui.theme.Emerald600
 import com.example.mindshield.ui.theme.Stone300
@@ -269,7 +270,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
 
                     Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(64.dp))
                     Text("Finished", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-                    Text("HR: 72  HRV: 45ms", color = Stone600, fontSize = 14.sp)
+                    Text("Average HR: ${"%.1f".format(UserBaseline.hr.mean)}", color = Stone600, fontSize = 14.sp)
                     Text("")
                 }
             }
@@ -289,7 +290,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
                     colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 ) {
-                    Text("Start the Test (30s)", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Start the Test", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
                 }
             } else if (isTesting) {
                 Button(

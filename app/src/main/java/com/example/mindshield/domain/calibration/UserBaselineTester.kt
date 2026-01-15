@@ -29,7 +29,7 @@ object UserStatisticsTester {
             return MetricStat(mean, stdDev)
         }
 
-
+        UserBaseline.setCalibrated(value = true)
         return UserBaseline.apply {
             hr = calcStat(samples.map { it.hr.toDouble() })
             rmssd = calcStat(samples.map { it.hrv.rmssd })
@@ -37,7 +37,6 @@ object UserStatisticsTester {
             pnn50 = calcStat(samples.map { it.hrv.pnn50 })
             lf = calcStat(samples.map { it.hrv.lf })
             hf = calcStat(samples.map { it.hrv.hf })
-            isCalibrated = true
         }
     }
 }

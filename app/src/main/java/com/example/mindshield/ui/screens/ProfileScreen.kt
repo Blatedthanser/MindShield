@@ -1,6 +1,5 @@
 package com.example.mindshield.ui.screens
 
-import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.SdStorage
 import androidx.compose.material.icons.outlined.Security
-import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -27,14 +25,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import com.example.mindshield.MainActivity
 import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 @Composable
-fun ProfileScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
+fun ProfileScreen(viewModel: OnboardingScreenViewModel, onCalibrationClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -70,7 +65,7 @@ fun ProfileScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
             Spacer(modifier = Modifier.width(16.dp))
             Column {
                 Text("MindShield User", fontWeight = FontWeight.Medium, fontSize = 16.sp, color = Stone900)
-                Text("Premium Plan Active", fontSize = 14.sp, color = Stone600)
+                Text("Premium Plan", fontSize = 14.sp, color = Stone600)
             }
         }
 
@@ -78,14 +73,14 @@ fun ProfileScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
         SettingsGroup(title = "Data & Privacy") {
             SettingsItem(
                 icon = Icons.Outlined.SdStorage,
-                label = "Manage Local Records",
-                onClick = {},
+                label = "Physiological Data Calibration",
+                onClick = onCalibrationClick,
                 showChevron = true,
-                showDivider = true
+                showDivider = false,
             )
             SettingsItem(
                 icon = Icons.Outlined.Delete,
-                label = "Clear All OCR Data",
+                label = "Clear All Historical Data",
                 onClick = {},
                 showChevron = false,
                 isDestructive = true,
@@ -113,13 +108,7 @@ fun ProfileScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
                     }
                 }
             )
-            SettingsItem(
-                icon = Icons.Outlined.Settings,
-                label = "Device Calibration",
-                onClick = showClick,
-                showChevron = true,
-                showDivider = false,
-            )
+
         }
 
         // --- Footer ---

@@ -34,7 +34,6 @@ class OnboardingScreenViewModel(application: Application) : AndroidViewModel(app
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     private val _countdown = MutableStateFlow<Int?>(null)
-    private lateinit var onboardingManager: OnboardingManager
     // 2. PUBLIC immutable state (Exposed to UI)
     val uiState = _uiState.asStateFlow()
     val countdown: StateFlow<Int?> = _countdown
@@ -75,7 +74,7 @@ class OnboardingScreenViewModel(application: Application) : AndroidViewModel(app
 
             // 3. Update state based on result
             baseline?.let {
-                if (it.isCalibrated) {
+                if (it.isCalibrated.value) {
                     _uiState.value = UiState.Success
                 } else {
                     _uiState.value = UiState.Error

@@ -1,5 +1,6 @@
 package com.example.mindshield.ui
 
+import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -7,6 +8,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -17,11 +19,17 @@ import com.example.mindshield.model.AppTab
 import com.example.mindshield.ui.screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
+import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 @Composable
-fun MainScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
-    var activeTab by remember { mutableStateOf(AppTab.SHIELD) }
+fun MainScreen(
+    onboardingScreenViewModel: OnboardingScreenViewModel,
+    interventionScreenViewModel: InterventionScreenViewModel,
+    onNavigateToCalibration: () -> Unit,
+    context: Context
+) {
+    var activeTab by rememberSaveable { mutableStateOf(AppTab.SHIELD) }
 
     Scaffold(
         containerColor = BeigeBackground,
@@ -54,8 +62,14 @@ fun MainScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
             when (activeTab) {
                 AppTab.SHIELD -> ShieldScreen()
                 AppTab.INSIGHT -> InsightScreen()
-                AppTab.INTERVENTION -> InterventionScreen()
-                AppTab.PROFILE -> ProfileScreen(viewModel, showClick)
+                AppTab.INTERVENTION -> InterventionScreen(
+                    context = context,
+                    interventionScreenViewModel
+                )
+                AppTab.PROFILE -> ProfileScreen(
+                    viewModel = onboardingScreenViewModel,
+                    onCalibrationClick = onNavigateToCalibration,
+                )
             }
         }
     }

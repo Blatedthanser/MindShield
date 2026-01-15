@@ -1,5 +1,6 @@
 package com.example.mindshield.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -33,20 +34,23 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.ui.draw.shadow
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun InterventionScreen() {
+fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel) {
+    val sensitivity by viewModel.triggerSensitivityState.collectAsState()
+    val edgeGlow by viewModel.screenEdgeGlow.collectAsState()
+    val desaturation by viewModel.colorDesaturation.collectAsState()
+    val hapticsEnabled by viewModel.wristVibration.collectAsState()
+    val heartbeatSync by viewModel.heartbeatSync.collectAsState()
+    val bubbleAlert by viewModel.floatingBubble.collectAsState()
 
-    var sensitivity by remember { mutableFloatStateOf(0.5f) }
-    var edgeGlow by remember { mutableStateOf(true) }
-    var desaturation by remember { mutableStateOf(false) }
-    var hapticsEnabled by remember { mutableStateOf(true) }
-    var heartbeatSync by remember { mutableStateOf(true) }
-    var bubbleAlert by remember { mutableStateOf(true) }
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val isDragged by interactionSource.collectIsDraggedAsState()
+
     val thumbSize by animateDpAsState(
         targetValue = if (isPressed || isDragged) 32.dp else 24.dp,
         label = "ThumbSizeAnimation"
@@ -79,7 +83,7 @@ fun InterventionScreen() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("Trigger Sensitivity", fontWeight = FontWeight.Medium, color = Stone900)
-                ContainerLabel(text = "${(sensitivity * 100).toInt()}%")
+                ContainerLabel(text = "${sensitivity}%")
             }
 
             Column(
@@ -91,8 +95,8 @@ fun InterventionScreen() {
                     .padding(24.dp)
             ) {
                 Slider(
-                    value = sensitivity,
-                    onValueChange = { sensitivity = it },
+                    value = (sensitivity / 100f),
+                    onValueChange = { viewModel.updateTriggerSensitivity((it * 100).toInt()) },
                     interactionSource = interactionSource,
                     colors = SliderDefaults.colors(
                         thumbColor = Emerald600,
@@ -152,14 +156,14 @@ fun InterventionScreen() {
                     title = "Screen Edge Glow",
                     subtitle = "Breathing light rhythm",
                     checked = edgeGlow,
-                    onCheckedChange = { edgeGlow = it },
+                    onCheckedChange = { viewModel.setScreenEdgeGlow(it) },
                     showDivider = true
                 )
                 SwitchRow(
                     title = "Color Desaturation",
                     subtitle = "Slowly reduce screen vibrancy",
                     checked = desaturation,
-                    onCheckedChange = { desaturation = it },
+                    onCheckedChange = { viewModel.setColorDesaturation(it) },
                     showDivider = false
                 )
             }
@@ -176,7 +180,7 @@ fun InterventionScreen() {
                     title = "Wrist Vibration",
                     subtitle = "Short, firm pulses to interrupt anger",
                     checked = hapticsEnabled,
-                    onCheckedChange = { hapticsEnabled = it },
+                    onCheckedChange = { viewModel.setWristVibration(it) },
                     showDivider = hapticsEnabled // 如果开启，下面还有一行，显示分割线
                 )
                 if (hapticsEnabled) {
@@ -213,7 +217,7 @@ fun InterventionScreen() {
                         }
                         Switch(
                             checked = heartbeatSync,
-                            onCheckedChange = { heartbeatSync = it },
+                            onCheckedChange = { viewModel.setHeartbeatSync(it) },
                             colors = SwitchDefaults.colors(
                                 checkedThumbColor = Color.White,
                                 checkedTrackColor = Emerald600,
@@ -237,7 +241,7 @@ fun InterventionScreen() {
                     title = "Floating Bubble",
                     subtitle = "Gentle \"MindShield Active\" overlay",
                     checked = bubbleAlert,
-                    onCheckedChange = { bubbleAlert = it },
+                    onCheckedChange = { viewModel.setFloatingBubble(it) },
                     showDivider = false
                 )
             }

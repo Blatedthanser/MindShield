@@ -21,7 +21,7 @@ class BaselineStorage(context: Context) {
             pnn50 = UserBaseline.pnn50,
             lf = UserBaseline.lf,
             hf = UserBaseline.hf,
-            isCalibrated = UserBaseline.isCalibrated
+            isCalibrated = UserBaseline.isCalibrated.value
         )
 
         val jsonString = gson.toJson(snapshot)
@@ -46,7 +46,10 @@ class BaselineStorage(context: Context) {
             UserBaseline.pnn50 = snapshot.pnn50
             UserBaseline.lf = snapshot.lf
             UserBaseline.hf = snapshot.hf
-            UserBaseline.isCalibrated = snapshot.isCalibrated
+            UserBaseline.setCalibrated(snapshot.isCalibrated)
+        }
+        else {
+
         }
     }
 

@@ -1,7 +1,10 @@
 package com.example.mindshield.domain.analysis
 
+import com.example.mindshield.data.preferences.UserSettings
 import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.model.HrvMetrics
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 
 enum class MentalState {
@@ -16,13 +19,24 @@ object PhysiologicalAnalyzer {
     /**
      * Uses Multivariate Statistical Analysis (Z-Scores) to detect anomalies.
      */
+    @Volatile
+    private var _sensitivity: Int = 50
+
+    fun observeSensitivity(scope: CoroutineScope, userSettings: UserSettings) {
+        scope.launch {
+            // 监听 DataStore 的 Flow
+            userSettings.triggerSensitivity.collect { newValue ->
+                // 一旦 DataStore 变了，这里自动更新
+                _sensitivity = newValue
+                println("Physiological: Sensitivity updated to $newValue")
+            }
+        }
+    }
     fun analyze(
         currentHr: Int,
         hrv: HrvMetrics,
         baseline: UserBaseline
     ): MentalState {
-
-        if (!baseline.isCalibrated) return MentalState.NULL
 
         // 1. CALCULATE Z-SCORES (Standardized Distance from Mean)
         // A Z-score of +2.0 means "Higher than 95% of normal readings"
