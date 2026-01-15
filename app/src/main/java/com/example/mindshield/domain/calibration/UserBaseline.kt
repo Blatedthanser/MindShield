@@ -1,4 +1,4 @@
-package com.example.mindshield.domain.analysis
+package com.example.mindshield.domain.calibration
 
 data class MetricStat(
     val mean: Double,
