@@ -62,4 +62,5 @@ dependencies {
     implementation("com.google.mediapipe:tasks-text:latest.release")
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
     implementation("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.datastore:datastore-preferences:1.0.0")
 }

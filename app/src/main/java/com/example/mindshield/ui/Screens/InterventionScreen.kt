@@ -33,8 +33,6 @@ import androidx.compose.foundation.interaction.collectIsDraggedAsState
 import androidx.compose.ui.draw.shadow
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
-import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,9 +51,6 @@ fun InterventionScreen() {
         targetValue = if (isPressed || isDragged) 32.dp else 24.dp,
         label = "ThumbSizeAnimation"
     )
-
-
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,7 +96,7 @@ fun InterventionScreen() {
                     interactionSource = interactionSource,
                     colors = SliderDefaults.colors(
                         thumbColor = Emerald600,
-                        // Set the color of the initional track transparent because we have to redefine it.
+                        // Set the color of the initial track transparent because we have to redefine it.
                         activeTrackColor = Color.Transparent,
                         inactiveTrackColor = Color.Transparent
                     ),
@@ -140,8 +135,8 @@ fun InterventionScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Dull", fontSize = 12.sp, color = Stone500)
-                    Text("Sensitive", fontSize = 12.sp, color = Stone500)
+                    Text("Dull", fontSize = 14.sp, color = Stone500)
+                    Text("Sensitive", fontSize = 14.sp, color = Stone500)
                 }
             }
             Spacer(modifier = Modifier.height(32.dp))
@@ -253,7 +248,7 @@ fun InterventionScreen() {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(Color(0xFFEFF6FF), RoundedCornerShape(12.dp)) // Blue 50
+                        .background(Color(0xF0EFF6FF), RoundedCornerShape(12.dp)) // Blue 50
                         .border(1.dp, Color(0xFFBFDBFE), RoundedCornerShape(12.dp))
                         .padding(16.dp),
                     verticalAlignment = Alignment.CenterVertically

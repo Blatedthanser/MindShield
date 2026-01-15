@@ -1,7 +1,7 @@
 package com.example.mindshield.ui.screens
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState // 可选：让进度条变化更丝滑
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,12 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
-// --- [新增] 必须引入下面这几个用于下拉刷新的库 ---
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-// ------------------------------------------------
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,7 +33,7 @@ import com.example.mindshield.data.repository.HOURLY_STRESS_DATA
 import com.example.mindshield.data.repository.MOCK_EVENTS
 import com.example.mindshield.ui.theme.*
 
-@OptIn(ExperimentalMaterial3Api::class) // --- [新增] 下拉刷新是实验性API，需要注解
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InsightScreen() {
     var expandedEventId by remember { mutableStateOf<String?>(null) }

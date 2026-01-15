@@ -1,6 +1,5 @@
 package com.example.mindshield.model
 
-
 enum class StressLevel { CALM, MODERATE, HIGH }
 enum class AppTab { SHIELD, INSIGHT, INTERVENTION, PROFILE }
 
