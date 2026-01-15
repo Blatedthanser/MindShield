@@ -1,4 +1,4 @@
-package com.example.mindshield.ui.Screens
+package com.example.mindshield.ui.screens
 
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -54,6 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import com.example.mindshield.R
 import com.example.mindshield.ui.theme.BeigeBackground
 import com.example.mindshield.ui.theme.Emerald600
@@ -62,6 +63,7 @@ import com.example.mindshield.ui.theme.Stone500
 import com.example.mindshield.ui.theme.Stone600
 import com.example.mindshield.ui.theme.Stone800
 import com.example.mindshield.ui.theme.Stone900
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -69,7 +71,7 @@ import kotlinx.coroutines.launch
 // 1. 核心引导页容器
 // =======================
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingScreenViewModel) {
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
 
@@ -92,7 +94,8 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                         onNext = { scope.launch { pagerState.animateScrollToPage(2) } }
                     )
                     2 -> CalibrationPage(
-                        onCalibrationComplete = { scope.launch { pagerState.animateScrollToPage(3) } }
+                        onCalibrationComplete = { scope.launch { pagerState.animateScrollToPage(3) } },
+                        viewModel
                     )
                     3 -> ConclusionPage(
                         onEnterApp = onFinish
@@ -182,7 +185,7 @@ fun FeatureIntroPage(onNext: () -> Unit) {
 // Page 3: 心率校准
 // =======================
 @Composable
-fun CalibrationPage(onCalibrationComplete: () -> Unit) {
+fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScreenViewModel) {
     var isTesting by remember { mutableStateOf(false) }
     var isFinished by remember { mutableStateOf(false) }
     var timer by remember { mutableIntStateOf(30) }
@@ -278,7 +281,10 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit) {
         ) {
             if (!isTesting && !isFinished) {
                 Button(
-                    onClick = { isTesting = true },
+                    onClick = {
+                        isTesting = true
+                        viewModel.startCalibration()
+                    },
                     // 修改：透明度颜色
                     colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
                     modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -300,6 +306,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit) {
                         onClick = {
                             isFinished = false
                             isTesting = true
+                            viewModel.startCalibration()
                         },
                         modifier = Modifier.weight(1f).height(56.dp)
                     ) {

@@ -7,27 +7,23 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelStore
 import com.example.mindshield.R
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
+import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
 import com.example.mindshield.domain.calibration.UserBaseline
-import com.example.mindshield.domain.calibration.UserStatisticsTester
-import com.example.mindshield.ui.viewmodel.StartScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
-import kotlin.getValue
 
 class MindShieldService : Service() {
 
@@ -40,8 +36,7 @@ class MindShieldService : Service() {
 
     private val CHANNEL_ID = "mindshield_service_channel"
 
-    val viewModel = ViewModelProvider(ViewModelStore(), ViewModelProvider.NewInstanceFactory())
-        .get(StartScreenViewModel::class.java)
+    private lateinit var onboardingManager: OnboardingManager
 
     override fun onCreate() {
         super.onCreate()
@@ -66,15 +61,17 @@ class MindShieldService : Service() {
 
             var lastUpdate = System.currentTimeMillis()
             var lastClassification = System.currentTimeMillis()
+
+            onboardingManager = OnboardingManager(applicationContext)
+
             while (true) {
-                if (!WearableSimulator.isConnected || !UserBaseline.isCalibrated || viewModel.uiState == StartScreenViewModel.UiState.Calibrating) {
+                if (!WearableSimulator.isConnected || !UserBaseline.isCalibrated || !onboardingManager.isOnboardingCompleted.first()) {
                     // suspend until connection comes back
                     delay(1000)
                     continue  // restart loop check
                 }
                 wearableSource.observeData().collect { data ->
                     val now = System.currentTimeMillis()
-
                     val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
 
                     println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")

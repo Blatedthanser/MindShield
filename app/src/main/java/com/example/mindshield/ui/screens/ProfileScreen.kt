@@ -1,5 +1,6 @@
 package com.example.mindshield.ui.screens
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -26,11 +27,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import com.example.mindshield.MainActivity
 import com.example.mindshield.ui.theme.*
-import com.example.mindshield.ui.viewmodel.StartScreenViewModel
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 @Composable
-fun ProfileScreen(viewModel: StartScreenViewModel) {
+fun ProfileScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,7 +116,7 @@ fun ProfileScreen(viewModel: StartScreenViewModel) {
             SettingsItem(
                 icon = Icons.Outlined.Settings,
                 label = "Device Calibration",
-                onClick = {viewModel.startCalibration()},
+                onClick = showClick,
                 showChevron = true,
                 showDivider = false,
             )

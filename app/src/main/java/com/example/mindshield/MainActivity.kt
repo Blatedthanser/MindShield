@@ -26,17 +26,19 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.mindshield.data.repository.OnboardingManager
+import com.example.mindshield.domain.calibration.BaselineStorage
+import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.MainScreen
-import com.example.mindshield.ui.Screens.OnboardingScreen
+import com.example.mindshield.ui.screens.OnboardingScreen
 import com.example.mindshield.ui.theme.MindShieldTheme
 import com.example.mindshield.ui.theme.*
-import com.example.mindshield.ui.viewmodel.StartScreenViewModel
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 import kotlinx.coroutines.launch
 
 
 class MainActivity : ComponentActivity() {
 
-    private val viewModel: StartScreenViewModel by viewModels()
+    private val viewModel: OnboardingScreenViewModel by viewModels()
 
     // 初始化 OnboardingManager
     private lateinit var onboardingManager: OnboardingManager
@@ -47,42 +49,71 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        //val storage = BaselineStorage(this)
         // 初始化 Manager
         onboardingManager = OnboardingManager(this)
+
+        val storage = BaselineStorage(this)
+        storage.loadBaseline()
+
+        if (UserBaseline.isCalibrated) {
+            println("=== Formatted UserBaseline Data ===")
+
+            val metrics = listOf(
+                "HR" to UserBaseline.hr,
+                "RMSSD" to UserBaseline.rmssd,
+                "SDNN" to UserBaseline.sdnn,
+                "pNN50" to UserBaseline.pnn50,
+                "LF" to UserBaseline.lf,
+                "HF" to UserBaseline.hf
+            )
+
+            metrics.forEach { (name, stat) ->
+                println("$name: ${stat.mean} ± ${stat.stdDev}")
+            }
+            println("Calibrated: ${UserBaseline.isCalibrated}")
+        }
 
         checkPermissionsAndStart()
 
         setContent {
             MindShieldTheme {
                 // 根据状态决定显示哪个界面
-                if (showMainScreenState == true) {
-                    // === 原有代码逻辑开始 (只有是主页时才显示) ===
-                    Box(modifier = Modifier.fillMaxSize()){
-                        MainScreen(viewModel = viewModel)
-                        FloatingBox(
-                            modifier = Modifier
-                                .align(alignment = Alignment.Center)
-                                .padding(16.dp)
+                when {
+                    showMainScreenState == true -> {
+                        // === 原有代码逻辑开始 (只有是主页时才显示) ===
+                        Box(modifier = Modifier.fillMaxSize()){
+                            MainScreen(viewModel = viewModel, { showOnboardingPage() })
+                            FloatingBox(
+                                modifier = Modifier
+                                    .align(alignment = Alignment.Center)
+                                    .padding(16.dp)
+                            )
+                        }
+                        // === 原有代码逻辑结束 ===
+                    }
+                    showMainScreenState == false -> {
+                        // 显示引导页
+                        OnboardingScreen(
+                            onFinish = {
+                                // 用户完成引导，更新 DataStore 并切换到主页
+                                lifecycleScope.launch {
+                                    onboardingManager.completeOnboarding()
+                                    showMainScreenState = true
+                                }
+                            },
+                            viewModel = viewModel
                         )
                     }
-                    // === 原有代码逻辑结束 ===
-                } else if (showMainScreenState == false) {
-                    // 显示引导页
-                    OnboardingScreen(
-                        onFinish = {
-                            // 用户完成引导，更新 DataStore 并切换到主页
-                            lifecycleScope.launch {
-                                onboardingManager.completeOnboarding()
-                                showMainScreenState = true
-                            }
-                        }
-                    )
-                } else {
-                    // showMainScreenState == null
-                    // 权限检查中或数据读取中，可以留空或显示个 Loading
+
                 }
+
             }
         }
+    }
+
+    fun showOnboardingPage() {
+        showMainScreenState = false
     }
 
     @Composable

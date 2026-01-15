@@ -15,3 +15,13 @@ object UserBaseline {
     var hf = MetricStat(250.0, 80.0)
     var isCalibrated = false
 }
+
+data class BaselineSnapshot(
+    val hr: MetricStat,
+    val rmssd: MetricStat,
+    val sdnn: MetricStat,
+    val pnn50: MetricStat,
+    val lf: MetricStat,
+    val hf: MetricStat,
+    val isCalibrated: Boolean
+)

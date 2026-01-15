@@ -14,13 +14,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.model.AppTab
-import com.example.mindshield.ui.Screens.InterventionScreen
+import com.example.mindshield.ui.screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
-import com.example.mindshield.ui.viewmodel.StartScreenViewModel
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 @Composable
-fun MainScreen(viewModel: StartScreenViewModel) {
+fun MainScreen(viewModel: OnboardingScreenViewModel, showClick: () -> Unit) {
     var activeTab by remember { mutableStateOf(AppTab.SHIELD) }
 
     Scaffold(
@@ -55,7 +55,7 @@ fun MainScreen(viewModel: StartScreenViewModel) {
                 AppTab.SHIELD -> ShieldScreen()
                 AppTab.INSIGHT -> InsightScreen()
                 AppTab.INTERVENTION -> InterventionScreen()
-                AppTab.PROFILE -> ProfileScreen(viewModel)
+                AppTab.PROFILE -> ProfileScreen(viewModel, showClick)
             }
         }
     }

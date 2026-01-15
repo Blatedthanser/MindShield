@@ -1,4 +1,4 @@
-package com.example.mindshield.ui.Screens
+package com.example.mindshield.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
