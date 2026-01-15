@@ -27,9 +27,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.ui.theme.*
+import com.example.mindshield.ui.viewmodel.StartScreenViewModel
 
 @Composable
-fun ProfileScreen() {
+fun ProfileScreen(viewModel: StartScreenViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -111,9 +112,9 @@ fun ProfileScreen() {
             SettingsItem(
                 icon = Icons.Outlined.Settings,
                 label = "Device Calibration",
-                onClick = {},
+                onClick = {viewModel.startCalibration()},
                 showChevron = true,
-                showDivider = false
+                showDivider = false,
             )
         }
 

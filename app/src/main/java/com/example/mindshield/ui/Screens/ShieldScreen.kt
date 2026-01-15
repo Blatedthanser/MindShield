@@ -21,11 +21,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
-import com.example.mindshield.domain.analysis.MentalState
+import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState.*
-import com.example.mindshield.model.StressLevel
 import com.example.mindshield.ui.theme.*
-import kotlinx.coroutines.flow.compose
 
 @Composable
 fun ShieldScreen() {
@@ -69,9 +67,9 @@ fun ShieldScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Watch, null, Modifier.size(14.dp), tint = animatedColor)
+                Icon(Icons.Outlined.Watch, null, Modifier.size(14.dp), tint = if (WearableSimulator.isConnected) animatedColor else Stone600)
                 Spacer(Modifier.width(4.dp))
-                Text("Connected", fontSize = 12.sp, color = Stone600)
+                Text(if (WearableSimulator.isConnected) "Connected" else "Not Connected", fontSize = 12.sp, color = Stone600)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Icon(Icons.Outlined.BatteryStd, null, Modifier.size(14.dp), tint = Stone600)

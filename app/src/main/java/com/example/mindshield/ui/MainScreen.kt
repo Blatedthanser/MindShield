@@ -17,9 +17,10 @@ import com.example.mindshield.model.AppTab
 import com.example.mindshield.ui.Screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
+import com.example.mindshield.ui.viewmodel.StartScreenViewModel
 
 @Composable
-fun MainScreen() {
+fun MainScreen(viewModel: StartScreenViewModel) {
     var activeTab by remember { mutableStateOf(AppTab.SHIELD) }
 
     Scaffold(
@@ -54,7 +55,7 @@ fun MainScreen() {
                 AppTab.SHIELD -> ShieldScreen()
                 AppTab.INSIGHT -> InsightScreen()
                 AppTab.INTERVENTION -> InterventionScreen()
-                AppTab.PROFILE -> ProfileScreen()
+                AppTab.PROFILE -> ProfileScreen(viewModel)
             }
         }
     }

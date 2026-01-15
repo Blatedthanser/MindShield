@@ -21,7 +21,7 @@ class WindowedStateAnalyzer {
 
         // --- STEP 1: Analyze Immediately (The Raw Classification) ---
         // We pass the full HRV object, so all 5 parameters are used correctly.
-        val instantState = PhysiologicalAnalyzer.analyze(data.hr, data.hrv)
+        val instantState = PhysiologicalAnalyzer.analyze(data.hr, data.hrv, UserBaseline)
 
         // --- STEP 2: Add Result to Sliding Window ---
         val now = data.timestamp

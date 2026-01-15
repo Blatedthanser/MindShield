@@ -20,7 +20,7 @@ enum class SimState {
 
 object WearableSimulator : IWearableSource {
 
-    private var isConnected = false
+    var isConnected = false
     private var currentScenario = MutableStateFlow(SimState.RESTING)
     private var internalHr = 70.0
 

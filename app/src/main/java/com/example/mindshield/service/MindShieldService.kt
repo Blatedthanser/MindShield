@@ -15,12 +15,12 @@ import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
+import com.example.mindshield.domain.calibration.UserStatisticsTester
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
-
 
 class MindShieldService : Service() {
 
@@ -38,6 +38,7 @@ class MindShieldService : Service() {
         println("MindShieldService: onCreate called (One-time setup)")
 
         createNotificationChannel()
+
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -59,7 +60,7 @@ class MindShieldService : Service() {
             wearableSource.observeData().collect { data ->
                 val now = System.currentTimeMillis()
 
-                val smoothedState = analyzer.process(data)
+                val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
 
                 println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")
 
@@ -81,6 +82,14 @@ class MindShieldService : Service() {
                         lastUpdate = now
                     }
                 }
+                else if (data.hr != 0){
+                    if (now - lastUpdate >= 5_000) {
+                        // Note: We send the 'Instant' HR (for display)
+                        // but the 'Smoothed' State (for color/status)
+                        DynamicDataToShieldPage.updateData(data.hr, MentalState.NULL)
+                        lastUpdate = now
+                    }
+                }
             }
         }
 
@@ -93,16 +102,6 @@ class MindShieldService : Service() {
         //TODO: OCR()
     }
 
-    private fun startDataCollection() {
-        // Logic to connect to wristband
-        println("MindShield: connecting to device...")
-
-        // Pseudo-code for data flow:
-        // wearableManager.connect()
-        // wearableManager.onHeartRateReceived = { hr ->
-        //      PhysiologicalAnalyzer.analyze(hr)
-        // }
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotification(): Notification {
