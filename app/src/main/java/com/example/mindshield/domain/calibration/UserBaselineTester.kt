@@ -1,8 +1,6 @@
 package com.example.mindshield.domain.calibration
 
 import com.example.mindshield.data.source.IWearableSource
-import com.example.mindshield.domain.analysis.MetricStat
-import com.example.mindshield.domain.analysis.UserBaseline
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.withTimeoutOrNull
@@ -30,6 +28,7 @@ object UserStatisticsTester {
             val stdDev = sqrt(variance).coerceAtLeast(1.0) // Prevent div by zero
             return MetricStat(mean, stdDev)
         }
+
 
         return UserBaseline.apply {
             hr = calcStat(samples.map { it.hr.toDouble() })

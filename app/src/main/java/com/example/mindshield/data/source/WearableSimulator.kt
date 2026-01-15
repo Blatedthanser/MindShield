@@ -6,10 +6,18 @@ import android.content.Intent
 import android.widget.Toast
 import com.example.mindshield.model.HrvMetrics
 import com.example.mindshield.model.WearableData
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.shareIn
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 enum class SimState {
@@ -32,35 +40,46 @@ object WearableSimulator : IWearableSource {
         println("SIMULATOR: Switched to $state")
     }
 
-    override fun observeData(): Flow<WearableData> = flow {
-        while (true) {
-            if (!isConnected) {
+    private val flowScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
+
+    override fun observeData(): SharedFlow<WearableData> {
+        val coldFlow = flow {
+            while (true) {
+                if (!isConnected) {
+                    delay(1000)
+                    continue
+                }
+
+                // 1. Target HR Logic
+                val targetHr = when (currentScenario.value) {
+                    SimState.RESTING -> 65.0
+                    SimState.EXERCISE -> 130.0 // Exercise usually higher HR than anger
+                    SimState.STRESS_ANGER -> 110.0 // Anger/Fear HR
+                }
+
+                // 2. Smooth HR Transition
+                val diff = targetHr - internalHr
+                internalHr += (diff * 0.1) + Random.nextDouble(-2.0, 2.0)
+                internalHr = internalHr.coerceIn(50.0, 190.0)
+
+                // 3. Generate 5-Parameter Metrics
+                val metrics = generatePreciseMetrics(internalHr, currentScenario.value)
+
+                emit(
+                    WearableData(
+                        hr = internalHr.toInt(),
+                        hrv = metrics
+                    )
+                )
+
                 delay(1000)
-                continue
             }
-
-            // 1. Target HR Logic
-            val targetHr = when (currentScenario.value) {
-                SimState.RESTING -> 65.0
-                SimState.EXERCISE -> 130.0 // Exercise usually higher HR than anger
-                SimState.STRESS_ANGER -> 110.0 // Anger/Fear HR
-            }
-
-            // 2. Smooth HR Transition
-            val diff = targetHr - internalHr
-            internalHr += (diff * 0.1) + Random.nextDouble(-2.0, 2.0)
-            internalHr = internalHr.coerceIn(50.0, 190.0)
-
-            // 3. Generate 5-Parameter Metrics
-            val metrics = generatePreciseMetrics(internalHr, currentScenario.value)
-
-            emit(WearableData(
-                hr = internalHr.toInt(),
-                hrv = metrics
-            ))
-
-            delay(1000)
         }
+        return coldFlow.shareIn(
+            scope = flowScope,
+            started = SharingStarted.Lazily,
+            replay = 1  // New subscribers get the latest value immediately
+        )
     }
 
     private fun generatePreciseMetrics(hr: Double, state: SimState): HrvMetrics {

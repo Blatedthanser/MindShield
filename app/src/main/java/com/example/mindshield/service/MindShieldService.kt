@@ -7,20 +7,27 @@ import android.app.Service
 import android.content.Intent
 import android.os.Build
 import android.os.IBinder
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelStore
 import com.example.mindshield.R
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
 import com.example.mindshield.data.source.IWearableSource
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
+import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.domain.calibration.UserStatisticsTester
+import com.example.mindshield.ui.viewmodel.StartScreenViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.getValue
 
 class MindShieldService : Service() {
 
@@ -32,6 +39,9 @@ class MindShieldService : Service() {
     private val serviceScope = CoroutineScope(Dispatchers.IO + Job())
 
     private val CHANNEL_ID = "mindshield_service_channel"
+
+    val viewModel = ViewModelProvider(ViewModelStore(), ViewModelProvider.NewInstanceFactory())
+        .get(StartScreenViewModel::class.java)
 
     override fun onCreate() {
         super.onCreate()
@@ -56,38 +66,44 @@ class MindShieldService : Service() {
 
             var lastUpdate = System.currentTimeMillis()
             var lastClassification = System.currentTimeMillis()
-
-            wearableSource.observeData().collect { data ->
-                val now = System.currentTimeMillis()
-
-                val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
-
-                println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")
-
-                // 3. Only proceed if we have enough data (Not NULL)
-                if (smoothedState != MentalState.NULL) {
-
-                    // Logic A: Trigger Intervention (Distress)
-                    if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 15_000)) {
-                        println("CORE SERVICE: Distress detected. Starting classification...")
-                        startTextClassification()
-                        lastClassification = now
-                    }
-
-                    // Logic B: Update UI (Throttled to 5 seconds)
-                    if (now - lastUpdate >= 5_000) {
-                        // Note: We send the 'Instant' HR (for display)
-                        // but the 'Smoothed' State (for color/status)
-                        DynamicDataToShieldPage.updateData(data.hr, smoothedState)
-                        lastUpdate = now
-                    }
+            while (true) {
+                if (!WearableSimulator.isConnected || !UserBaseline.isCalibrated || viewModel.uiState == StartScreenViewModel.UiState.Calibrating) {
+                    // suspend until connection comes back
+                    delay(1000)
+                    continue  // restart loop check
                 }
-                else if (data.hr != 0){
-                    if (now - lastUpdate >= 5_000) {
-                        // Note: We send the 'Instant' HR (for display)
-                        // but the 'Smoothed' State (for color/status)
-                        DynamicDataToShieldPage.updateData(data.hr, MentalState.NULL)
-                        lastUpdate = now
+                wearableSource.observeData().collect { data ->
+                    val now = System.currentTimeMillis()
+
+                    val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
+
+                    println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")
+
+                    // 3. Only proceed if we have enough data (Not NULL)
+                    if (smoothedState != MentalState.NULL) {
+
+                        // Logic A: Trigger Intervention (Distress)
+                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 15_000)) {
+                            println("CORE SERVICE: Distress detected. Starting classification...")
+                            startTextClassification()
+                            lastClassification = now
+                        }
+
+                        // Logic B: Update UI (Throttled to 5 seconds)
+                        if (now - lastUpdate >= 5_000) {
+                            // Note: We send the 'Instant' HR (for display)
+                            // but the 'Smoothed' State (for color/status)
+                            DynamicDataToShieldPage.updateData(data.hr, smoothedState)
+                            lastUpdate = now
+                        }
+                    }
+                    else if (data.hr != 0){
+                        if (now - lastUpdate >= 5_000) {
+                            // Note: We send the 'Instant' HR (for display)
+                            // but the 'Smoothed' State (for color/status)
+                            DynamicDataToShieldPage.updateData(data.hr, MentalState.NULL)
+                            lastUpdate = now
+                        }
                     }
                 }
             }
@@ -100,6 +116,7 @@ class MindShieldService : Service() {
     private fun startTextClassification() {
         //TODO: screenShot()
         //TODO: OCR()
+        //TODO: Classification
     }
 
 
