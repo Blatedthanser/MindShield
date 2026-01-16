@@ -29,20 +29,20 @@ class InterventionScreenViewModel(private val userSettings: UserSettings) : View
     val triggerSensitivity: StateFlow<Int> = userSettings.triggerSensitivity
         .stateIn(viewModelScope, SharingStarted.Lazily, 50)
 
-    val screenEdgeGlow: StateFlow<Boolean> = userSettings.screenEdgeGlow
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
+    val screenEdgeGlow: StateFlow<Boolean?> = userSettings.screenEdgeGlow
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val colorDesaturation: StateFlow<Boolean> = userSettings.colorDesaturation
-        .stateIn(viewModelScope, SharingStarted.Lazily, false)
+    val colorDesaturation: StateFlow<Boolean?> = userSettings.colorDesaturation
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val wristVibration: StateFlow<Boolean> = userSettings.wristVibration
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
+    val wristVibration: StateFlow<Boolean?> = userSettings.wristVibration
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val heartbeatSync: StateFlow<Boolean> = userSettings.heartbeatSync
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
+    val heartbeatSync: StateFlow<Boolean?> = userSettings.heartbeatSync
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
-    val floatingBubble: StateFlow<Boolean> = userSettings.floatingBubble
-        .stateIn(viewModelScope, SharingStarted.Lazily, true)
+    val floatingBubble: StateFlow<Boolean?> = userSettings.floatingBubble
+        .stateIn(viewModelScope, SharingStarted.Lazily, null)
 
     // === Update functions ===
 

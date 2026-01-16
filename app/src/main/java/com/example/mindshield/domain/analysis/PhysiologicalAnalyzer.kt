@@ -78,6 +78,8 @@ object PhysiologicalAnalyzer {
                 (zSdnn * 0.5) +    // SDNN stays Neutral or goes UP (Mechanical noise)
                 (zRatio * 0.0)     // Ratio goes UP slightly
 
+        // 6. Sensitivity
+        val threshold: Double = (100 - _sensitivity) / 100.0 * 60.0   //Default = 50
         // 5. THE VERDICT (Comparison)
 
         println("ANALYSIS: DistressScore=${"%.2f".format(distressVector)} | ExerciseScore=${"%.2f".format(exerciseVector)}")
@@ -85,9 +87,9 @@ object PhysiologicalAnalyzer {
         return when {
             // A Distress score > 3.0 indicates statistically significant deviation (Sigma 3)
             // AND Distress must be clearly stronger than the Exercise signature
-            distressVector > 30.0 && distressVector > exerciseVector -> MentalState.DISTRESS
+            distressVector > threshold && distressVector > exerciseVector -> MentalState.DISTRESS
 
-            distressVector > 15.0 && zRatio > 5.0 -> MentalState.EXCITEMENT
+            distressVector > threshold / 2 && zRatio > 5.0 -> MentalState.EXCITEMENT
 
             else -> MentalState.CALM_OR_HAPPY
         }

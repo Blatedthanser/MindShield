@@ -42,44 +42,47 @@ object WearableSimulator : IWearableSource {
 
     private val flowScope = CoroutineScope(Dispatchers.Default + SupervisorJob())
 
-    override fun observeData(): SharedFlow<WearableData> {
-        val coldFlow = flow {
-            while (true) {
-                if (!isConnected) {
-                    delay(1000)
-                    continue
-                }
-
-                // 1. Target HR Logic
-                val targetHr = when (currentScenario.value) {
-                    SimState.RESTING -> 65.0
-                    SimState.EXERCISE -> 130.0 // Exercise usually higher HR than anger
-                    SimState.STRESS_ANGER -> 110.0 // Anger/Fear HR
-                }
-
-                // 2. Smooth HR Transition
-                val diff = targetHr - internalHr
-                internalHr += (diff * 0.1) + Random.nextDouble(-2.0, 2.0)
-                internalHr = internalHr.coerceIn(50.0, 190.0)
-
-                // 3. Generate 5-Parameter Metrics
-                val metrics = generatePreciseMetrics(internalHr, currentScenario.value)
-
-                emit(
-                    WearableData(
-                        hr = internalHr.toInt(),
-                        hrv = metrics
-                    )
-                )
-
+    private val coldFlow = flow {
+        while (true) {
+            if (!isConnected) {
                 delay(1000)
+                continue
             }
+
+            // 1. Target HR Logic
+            val targetHr = when (currentScenario.value) {
+                SimState.RESTING -> 65.0
+                SimState.EXERCISE -> 130.0 // Exercise usually higher HR than anger
+                SimState.STRESS_ANGER -> 110.0 // Anger/Fear HR
+            }
+
+            // 2. Smooth HR Transition
+            val diff = targetHr - internalHr
+            internalHr += (diff * 0.1) + Random.nextDouble(-2.0, 2.0)
+            internalHr = internalHr.coerceIn(50.0, 190.0)
+
+            // 3. Generate 5-Parameter Metrics
+            val metrics = generatePreciseMetrics(internalHr, currentScenario.value)
+
+            emit(
+                WearableData(
+                    hr = internalHr.toInt(),
+                    hrv = metrics
+                )
+            )
+
+            delay(1000)
         }
-        return coldFlow.shareIn(
-            scope = flowScope,
-            started = SharingStarted.Lazily,
-            replay = 1  // New subscribers get the latest value immediately
-        )
+    }
+
+    private val _sharedData: SharedFlow<WearableData> = coldFlow.shareIn(
+        scope = flowScope,
+        started = SharingStarted.Lazily,
+        replay = 1  // New subscribers get the latest value immediately
+    )
+
+    override fun observeData(): SharedFlow<WearableData> {
+        return _sharedData
     }
 
     private fun generatePreciseMetrics(hr: Double, state: SimState): HrvMetrics {

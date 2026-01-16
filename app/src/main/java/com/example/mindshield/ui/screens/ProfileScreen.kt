@@ -1,5 +1,7 @@
 package com.example.mindshield.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,11 +27,17 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat.startActivity
 import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
+import android.provider.Settings
 
 @Composable
-fun ProfileScreen(viewModel: OnboardingScreenViewModel, onCalibrationClick: () -> Unit) {
+fun ProfileScreen(
+    viewModel: OnboardingScreenViewModel,
+    onCalibrationClick: () -> Unit,
+    context: Context
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -76,7 +84,7 @@ fun ProfileScreen(viewModel: OnboardingScreenViewModel, onCalibrationClick: () -
                 label = "Physiological Data Calibration",
                 onClick = onCalibrationClick,
                 showChevron = true,
-                showDivider = false,
+                showDivider = true,
             )
             SettingsItem(
                 icon = Icons.Outlined.Delete,
@@ -95,7 +103,10 @@ fun ProfileScreen(viewModel: OnboardingScreenViewModel, onCalibrationClick: () -
             SettingsItem(
                 icon = Icons.Outlined.Security,
                 label = "Accessibility Service",
-                onClick = {},
+                onClick = {
+                    val intent = Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS)
+                    context.startActivity(intent)
+                },
                 showChevron = false,
                 showDivider = true,
                 trailingContent = {

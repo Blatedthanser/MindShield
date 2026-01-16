@@ -69,6 +69,7 @@ fun MainScreen(
                 AppTab.PROFILE -> ProfileScreen(
                     viewModel = onboardingScreenViewModel,
                     onCalibrationClick = onNavigateToCalibration,
+                    context = context
                 )
             }
         }

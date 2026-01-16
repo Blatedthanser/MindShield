@@ -183,7 +183,7 @@ fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel
                     onCheckedChange = { viewModel.setWristVibration(it) },
                     showDivider = hapticsEnabled // 如果开启，下面还有一行，显示分割线
                 )
-                if (hapticsEnabled) {
+                if (hapticsEnabled == true) {
                     // Heartbeat Sync Sub-item
                     Row(
                         modifier = Modifier
@@ -215,16 +215,22 @@ fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel
                                 color = Stone500
                             )
                         }
-                        Switch(
-                            checked = heartbeatSync,
-                            onCheckedChange = { viewModel.setHeartbeatSync(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                checkedTrackColor = Emerald600,
-                                uncheckedThumbColor = Color.White,
-                                uncheckedTrackColor = Color(0xFFA8A29E)
+                        if (heartbeatSync != null){
+                            Switch(
+                                checked = heartbeatSync == true,
+                                onCheckedChange = { viewModel.setHeartbeatSync(it) },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = Color.White,
+                                    checkedTrackColor = Emerald600,
+                                    uncheckedThumbColor = Color.White,
+                                    uncheckedTrackColor = Color(0xFFA8A29E)
+                                )
                             )
-                        )
+                        }
+                        else {
+                            //
+                        }
+
                     }
                 }
             }
@@ -247,7 +253,7 @@ fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel
             }
 
             // --- Demo Info Box ---
-            if (edgeGlow) {
+            if (edgeGlow == true) {
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
                     modifier = Modifier
@@ -324,9 +330,9 @@ fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel
     fun SwitchRow(
         title: String,
         subtitle: String,
-        checked: Boolean,
+        checked: Boolean?,
         onCheckedChange: (Boolean) -> Unit,
-        showDivider: Boolean
+        showDivider: Boolean?
     ) {
         Row(
             modifier = Modifier
@@ -339,18 +345,24 @@ fun InterventionScreen(context : Context, viewModel: InterventionScreenViewModel
                 Text(title, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Stone900)
                 Text(subtitle, fontSize = 12.sp, color = Stone500)
             }
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange,
-                colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Emerald600,
-                    uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color(0xFFA8A29E) // stone-400
+            if (checked != null) {
+                Switch(
+                    checked = checked,
+                    onCheckedChange = onCheckedChange,
+                    colors = SwitchDefaults.colors(
+                        checkedThumbColor = Color.White,
+                        checkedTrackColor = Emerald600,
+                        uncheckedThumbColor = Color.White,
+                        uncheckedTrackColor = Color(0xFFA8A29E) // stone-400
+                    )
                 )
-            )
+            }
+            else {
+                //
+            }
+
         }
-        if (showDivider) {
+        if (showDivider == true) {
             Divider(color = Color(0xFFD6D3D1), thickness = 1.dp)
         }
     }

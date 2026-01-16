@@ -29,7 +29,7 @@ class UserSettings(private val context: Context) {
         .map { it[Keys.SCREEN_EDGE_GLOW] ?: true }
 
     val colorDesaturation: Flow<Boolean> = context.dataStore.data
-        .map { it[Keys.COLOR_DESATURATION] ?: false }
+        .map { it[Keys.COLOR_DESATURATION] ?: true }
 
     val wristVibration: Flow<Boolean> = context.dataStore.data
         .map { it[Keys.WRIST_VIBRATION] ?: true }

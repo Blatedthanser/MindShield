@@ -4,9 +4,13 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
 import com.example.mindshield.R
@@ -41,26 +45,30 @@ class MindShieldService : Service() {
 
     private lateinit var onboardingManager: OnboardingManager
 
+    companion object{
+        const val ACTION_RESPONSE = "analyzer.ACTION_RESPONSE"
+        private var instance: MindShieldService? = null
+
+        // 供外部调用的公开方法
+        fun judgeOnResponse(result: String) {
+            instance?.judgeOnResponse(result) ?: Log.e("MindShield", "服务未开启，无法启动任务")
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
+        createNotificationChannel()
+        instance = this
+        Log.d("MindShield", "服务已连接，实例已注册")
         println("MindShieldService: onCreate called (One-time setup)")
+
         val settings = UserSettings(applicationContext)
         PhysiologicalAnalyzer.observeSensitivity(serviceScope, settings)
 
-        createNotificationChannel()
-
-    }
-
-    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        println("MindShieldService: onStartCommand called (Starting work)")
-
-        // 1. Immediately turn into a Foreground Service
-        startForeground(1, buildNotification())
-
-        // 2. Connect to the band (Safe to call multiple times if your simulator handles it)
+        // Connect to band
         wearableSource.connect()
 
-        // 3. Start collecting data (Launch in our custom scope)
+        // Start collecting data (Launch in our custom scope)
         serviceScope.launch {
             val analyzer = WindowedStateAnalyzer()
 
@@ -68,6 +76,7 @@ class MindShieldService : Service() {
             var lastClassification = System.currentTimeMillis()
 
             onboardingManager = OnboardingManager(applicationContext)
+            var triggerCount: Int = 0
 
             while (true) {
                 if (!WearableSimulator.isConnected || !onboardingManager.isOnboardingCompleted.first()) {
@@ -77,6 +86,7 @@ class MindShieldService : Service() {
                 }
                 wearableSource.observeData().collect { data ->
                     val now = System.currentTimeMillis()
+
                     val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
 
                     println("CORE SERVICE: HR=${data.hr} | RawHRV=${data.hrv.rmssd.toInt()} | State=$smoothedState")
@@ -85,12 +95,15 @@ class MindShieldService : Service() {
                     if (smoothedState != MentalState.NULL) {
 
                         // Logic A: Trigger Intervention (Distress)
-                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 15_000)) {
+                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 60_000 * 0.05) && triggerCount < 2) {  // 5 minutes
                             println("CORE SERVICE: Distress detected. Starting classification...")
+                            triggerCount ++
                             startTextClassification()
                             lastClassification = now
                         }
-
+                        else if (now - lastClassification >= 60_000 * 0.2){
+                            triggerCount = 0
+                        }
                         // Logic B: Update UI (Throttled to 5 seconds)
                         if (now - lastUpdate >= 5_000) {
                             // Note: We send the 'Instant' HR (for display)
@@ -110,17 +123,29 @@ class MindShieldService : Service() {
                 }
             }
         }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        println("MindShieldService: onStartCommand called (Starting work)")
+
+        // Immediately turn into a Foreground Service
+        startForeground(1, buildNotification())
 
         // If the system kills the service due to low memory, restart it automatically
         return START_STICKY
     }
 
+    private fun judgeOnResponse(result: String) {
+        if (result == "非常负面 (Very Negative)") {
+            Log.d("TAG","强干预")
+        }
+        else if (result == "负面 (Negative)") {
+            Log.d("TAG","弱干预")
+        }
+    }
     private fun startTextClassification() {
-        //TODO: screenShot()
-        //TODO: OCR()
-        //TODO: Classification
-        //TODO: Trigger Reminder (Put it in history
-
+        Log.d("MindShield", "尝试启动诊断...")
+        MindShieldAccessibilityService.startDiagnosisFromActivity()
     }
 
 

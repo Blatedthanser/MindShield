@@ -1,8 +1,12 @@
 package com.example.mindshield
 
 import android.Manifest
+import android.accessibilityservice.AccessibilityService
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -42,12 +46,13 @@ import com.example.mindshield.ui.screens.CalibrationScreen
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModelFactory
 import kotlinx.coroutines.flow.first
-
+import android.provider.Settings
 
 class MainActivity : ComponentActivity() {
 
     private val onboardingScreenViewModel: OnboardingScreenViewModel by viewModels()
 
+    private lateinit var mediaProjectionManager: MediaProjectionManager
     private lateinit var userSettings: UserSettings
     private val interventionScreenViewModel: InterventionScreenViewModel by viewModels {
         InterventionScreenViewModelFactory(userSettings)
@@ -241,7 +246,6 @@ class MainActivity : ComponentActivity() {
         } else {
             startService(intent)
         }
-
         // 服务启动（意味着权限已就绪）后，开始检查引导状态
         checkOnboardingStatus()
     }
@@ -253,5 +257,18 @@ class MainActivity : ComponentActivity() {
                 showMainScreenState = completed
             }
         }
+    }
+
+    fun isAccessibilityServiceEnabled(
+        context: Context,
+        service: Class<out AccessibilityService>
+    ): Boolean {
+        val expectedComponent = ComponentName(context, service)
+        val enabledServices = Settings.Secure.getString(
+            context.contentResolver,
+            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
+        ) ?: return false
+
+        return enabledServices.contains(expectedComponent.flattenToString())
     }
 }
