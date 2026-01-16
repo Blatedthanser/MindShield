@@ -33,7 +33,7 @@ import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.domain.calibration.BaselineStorage
 import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.MainScreen
-import com.example.mindshield.ui.screens.OnboardingScreen
+import com.example.mindshield.ui.Screens.OnboardingScreen
 import com.example.mindshield.ui.theme.MindShieldTheme
 import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
