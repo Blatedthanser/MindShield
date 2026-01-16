@@ -26,10 +26,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.AdminPanelSettings
-import androidx.compose.material.icons.outlined.Analytics
 import androidx.compose.material.icons.outlined.ArrowCircleRight
-import androidx.compose.material.icons.outlined.MonitorHeart
-import androidx.compose.material.icons.outlined.SettingsAccessibility
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -41,7 +38,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -60,7 +56,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.R
 import com.example.mindshield.ui.theme.BeigeBackground
-import com.example.mindshield.ui.theme.CardBeige
 import com.example.mindshield.ui.theme.Emerald600
 import com.example.mindshield.ui.theme.Stone300
 import com.example.mindshield.ui.theme.Stone500
@@ -69,12 +64,14 @@ import com.example.mindshield.ui.theme.Stone800
 import com.example.mindshield.ui.theme.Stone900
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.mindshield.domain.calibration.UserBaseline
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 // =======================
 // 1. 核心引导页容器
 // =======================
 @Composable
-fun OnboardingScreen(onFinish: () -> Unit) {
+fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingScreenViewModel) {
     val pagerState = rememberPagerState(pageCount = { 4 })
     val scope = rememberCoroutineScope()
 
@@ -97,7 +94,8 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                         onNext = { scope.launch { pagerState.animateScrollToPage(2) } }
                     )
                     2 -> CalibrationPage(
-                        onCalibrationComplete = { scope.launch { pagerState.animateScrollToPage(3) } }
+                        onCalibrationComplete = { scope.launch { pagerState.animateScrollToPage(3) } },
+                        viewModel
                     )
                     3 -> ConclusionPage(
                         onEnterApp = onFinish
@@ -187,7 +185,8 @@ fun FeatureIntroPage(onNext: () -> Unit) {
 // Page 3: 心率校准
 // =======================
 @Composable
-fun CalibrationPage(onCalibrationComplete: () -> Unit) {
+fun CalibrationPage(onCalibrationComplete: () -> Unit,
+                    viewModel: OnboardingScreenViewModel) {
     var isTesting by remember { mutableStateOf(false) }
     var isFinished by remember { mutableStateOf(false) }
     var timer by remember { mutableIntStateOf(30) }
@@ -291,7 +290,10 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit) {
         ) {
             if (!isTesting && !isFinished) {
                 Button(
-                    onClick = { isTesting = true },
+                    onClick = {
+                        isTesting = true
+                        viewModel.startCalibration()
+                    },
                     // 修改：透明度颜色
                     colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                     modifier = Modifier.fillMaxWidth().height(56.dp)
@@ -313,6 +315,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit) {
                         onClick = {
                             isFinished = false
                             isTesting = true
+                            viewModel.startCalibration()
                         },
                         modifier = Modifier.weight(1f).height(56.dp)
                     ) {
