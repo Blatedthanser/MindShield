@@ -1,5 +1,6 @@
-package com.example.mindshield.ui.screens
+package com.example.mindshield.ui.Screens
 
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -24,8 +25,8 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.outlined.Analytics
-import androidx.compose.material.icons.outlined.MonitorHeart
+import androidx.compose.material.icons.outlined.AdminPanelSettings
+import androidx.compose.material.icons.outlined.ArrowCircleRight
 import androidx.compose.material.icons.outlined.VerifiedUser
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -37,7 +38,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,9 +54,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.ViewModel
 import com.example.mindshield.R
-import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.theme.BeigeBackground
 import com.example.mindshield.ui.theme.Emerald600
 import com.example.mindshield.ui.theme.Stone300
@@ -64,9 +62,10 @@ import com.example.mindshield.ui.theme.Stone500
 import com.example.mindshield.ui.theme.Stone600
 import com.example.mindshield.ui.theme.Stone800
 import com.example.mindshield.ui.theme.Stone900
-import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import com.example.mindshield.domain.calibration.UserBaseline
+import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 // =======================
 // 1. 核心引导页容器
@@ -136,7 +135,7 @@ fun WelcomePage(onNext: () -> Unit) {
         Button(
             onClick = onNext,
             // 修改：透明度颜色
-            colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
+            colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Text("NEXT")
@@ -145,7 +144,7 @@ fun WelcomePage(onNext: () -> Unit) {
 }
 
 // =======================
-// Page 2: 功能介绍
+// Page 2: 隐私介绍
 // =======================
 @Composable
 fun FeatureIntroPage(onNext: () -> Unit) {
@@ -155,16 +154,16 @@ fun FeatureIntroPage(onNext: () -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
-            imageVector = Icons.Outlined.Analytics,
-            contentDescription = "Feature",
+            imageVector = Icons.Outlined.AdminPanelSettings,
+            contentDescription = "Privacy",
             tint = Emerald600,
-            modifier = Modifier.size(120.dp)
+            modifier = Modifier.size(90.dp)
         )
         Spacer(modifier = Modifier.height(40.dp))
-        Text("Insight and Intervention", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
+        Text("We Care About Your Privacy", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            "Periodically HRV Analysis，\nPrecise source-figuring，\nOn-time provided interventions.",
+            "Locally Deployed Model\nNo data submitted\nNo worry about your privacy",
             textAlign = TextAlign.Center,
             color = Stone600,
             fontSize = 16.sp,
@@ -174,7 +173,7 @@ fun FeatureIntroPage(onNext: () -> Unit) {
         Button(
             onClick = onNext,
             // 修改：透明度颜色
-            colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
+            colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Text("NEXT")
@@ -186,20 +185,29 @@ fun FeatureIntroPage(onNext: () -> Unit) {
 // Page 3: 心率校准
 // =======================
 @Composable
-fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScreenViewModel) {
+fun CalibrationPage(onCalibrationComplete: () -> Unit,
+                    viewModel: OnboardingScreenViewModel) {
     var isTesting by remember { mutableStateOf(false) }
     var isFinished by remember { mutableStateOf(false) }
     var timer by remember { mutableIntStateOf(30) }
-    var progress by remember { mutableFloatStateOf(0f) }
+    val progressAnim = remember { Animatable(0f) }
 
     LaunchedEffect(isTesting) {
         if (isTesting) {
             timer = 30
-            progress = 0f
+            progressAnim.snapTo(0f)
+            launch {
+                progressAnim.animateTo(
+                    targetValue = 1f,
+                    animationSpec = tween(
+                        durationMillis = 30000,
+                        easing = LinearEasing
+                    )
+                )
+            }
             while (timer > 0) {
                 delay(1000)
                 timer--
-                progress = (30 - timer) / 30f
             }
             isTesting = false
             isFinished = true
@@ -223,10 +231,10 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(32.dp))
-            Text("Reference Calibration", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
+            Text("Baseline Calibration", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                "We need to test your standard HR and HRV\nto build your personal profile.",
+                "We need to test your standard HR and HRV\nto build your personal profile\nPLease STAY CALM during the test.",
                 textAlign = TextAlign.Center,
                 color = Stone600,
                 fontSize = 14.sp
@@ -249,7 +257,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
 
             if (isTesting || isFinished) {
                 CircularProgressIndicator(
-                    progress = { if(isFinished) 1f else progress },
+                    progress = { if(isFinished) 1f else progressAnim.value },
                     modifier = Modifier.size(192.dp),
                     color = Emerald600,
                     strokeWidth = 4.dp,
@@ -259,19 +267,19 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 if (!isTesting && !isFinished) {
-                    Icon(Icons.Outlined.MonitorHeart, null, tint = Stone500, modifier = Modifier.size(48.dp))
+                    Icon(Icons.Outlined.ArrowCircleRight, null, tint = Stone500, modifier = Modifier.size(48.dp))
                     Text("I'm prepared.", color = Stone500, fontWeight = FontWeight.Medium)
                 } else if (isTesting) {
                     Text("$timer", fontSize = 64.sp, fontWeight = FontWeight.Bold, color = Stone800)
-                    Text("-Collecting-", color = Emerald600, fontWeight = FontWeight.Medium)
+                    Text("  Collecting...", color = Emerald600, fontWeight = FontWeight.Medium)
                 } else {
                     // 修改：这里添加一个Spacer，把下面的内容整体下移
                     Spacer(modifier = Modifier.height(24.dp))
 
-                    Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(64.dp))
+                    Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(48.dp))
                     Text("Finished", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-                    Text("Average HR: ${"%.1f".format(UserBaseline.hr.mean)}", color = Stone600, fontSize = 14.sp)
-                    Text("")
+                    Text("HR: 72  HRV: 45ms", color = Stone600, fontSize = 14.sp)
+                    Text("")  //这个不要删，是用来调整上面两行字的位置的
                 }
             }
         }
@@ -287,7 +295,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
                         viewModel.startCalibration()
                     },
                     // 修改：透明度颜色
-                    colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                     modifier = Modifier.fillMaxWidth().height(56.dp)
                 ) {
                     Text("Start the Test", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
@@ -316,7 +324,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit ,viewModel: OnboardingScre
                     Button(
                         onClick = onCalibrationComplete,
                         // 修改：透明度颜色
-                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
+                        colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
                         modifier = Modifier.weight(1f).height(56.dp)
                     ) {
                         Text("Finish Setting", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
@@ -341,7 +349,7 @@ fun ConclusionPage(onEnterApp: () -> Unit) {
             imageVector = Icons.Outlined.VerifiedUser,
             contentDescription = null,
             tint = Emerald600,
-            modifier = Modifier.size(100.dp)
+            modifier = Modifier.size(90.dp)
         )
         Spacer(modifier = Modifier.height(40.dp))
         Text("Everything is ready", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Stone900)
@@ -356,7 +364,7 @@ fun ConclusionPage(onEnterApp: () -> Unit) {
         Button(
             onClick = onEnterApp,
             // 修改：透明度颜色
-            colors = ButtonDefaults.buttonColors(containerColor = Emerald600.copy(alpha = 0.8f)),
+            colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
             modifier = Modifier.fillMaxWidth().height(56.dp)
         ) {
             Text("Enter MindShield", fontSize = 16.sp)

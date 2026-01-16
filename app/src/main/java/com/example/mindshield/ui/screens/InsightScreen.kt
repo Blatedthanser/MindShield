@@ -79,7 +79,7 @@ fun InsightScreen() {
             // --- 1. Stress Time Distribution Chart ---
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEADDCF)),
+                    colors = CardDefaults.cardColors(containerColor = CardBeige),//Color(0xFFEADDCF)
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(220.dp)
@@ -135,7 +135,7 @@ fun InsightScreen() {
             // --- 2. Most Irritable Apps Ranking (New Section) ---
             item {
                 Card(
-                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEADDCF)),
+                    colors = CardDefaults.cardColors(containerColor = CardBeige),
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(1.dp, Stone300, RoundedCornerShape(12.dp)),
