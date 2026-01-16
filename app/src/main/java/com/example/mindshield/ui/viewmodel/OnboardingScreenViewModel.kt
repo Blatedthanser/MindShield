@@ -1,10 +1,12 @@
 package com.example.mindshield.ui.viewmodel
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mindshield.data.source.IWearableSource
+import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.data.source.WearableSimulator
+import com.example.mindshield.domain.calibration.BaselineStorage
+import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.domain.calibration.UserStatisticsTester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +20,7 @@ import kotlinx.coroutines.launch
 
 
 
-class StartScreenViewModel() : ViewModel() {
+class OnboardingScreenViewModel(application: Application) : AndroidViewModel(application) {
 
     sealed interface UiState {
         data object Idle : UiState
@@ -26,12 +28,12 @@ class StartScreenViewModel() : ViewModel() {
         data object Success : UiState
         data object Error : UiState
     }
-
     // Private mutable state (internal use)
+    private val baselineStorage =
+        BaselineStorage(application)
+
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     private val _countdown = MutableStateFlow<Int?>(null)
-
-
     // 2. PUBLIC immutable state (Exposed to UI)
     val uiState = _uiState.asStateFlow()
     val countdown: StateFlow<Int?> = _countdown
@@ -44,13 +46,21 @@ class StartScreenViewModel() : ViewModel() {
                 initialValue = false
             )
 
-
+    fun loadBaseline() {
+        baselineStorage.loadBaseline()
+    }
+    fun saveBaseline() {
+        baselineStorage.saveBaseline()
+    }
+    fun clearBaseline() {
+        baselineStorage.clearBaseline()
+    }
     fun startCalibration() {
         viewModelScope.launch {
             // Set Loading
             _uiState.value = UiState.Calibrating
 
-            val durationTime = 15   //45s
+            val durationTime = 30
             _countdown.value = durationTime
 
             launch {
@@ -64,12 +74,28 @@ class StartScreenViewModel() : ViewModel() {
 
             // 3. Update state based on result
             baseline?.let {
-                if (it.isCalibrated) {
+                if (it.isCalibrated.value) {
                     _uiState.value = UiState.Success
                 } else {
                     _uiState.value = UiState.Error
                 }
             }
+            saveBaseline()
+            /*println("=== Formatted UserBaseline Data ===")
+
+            val metric= listOf(
+                "HR" to UserBaseline.hr,
+                "RMSSD" to UserBaseline.rmssd,
+                "SDNN" to UserBaseline.sdnn,
+                "pNN50" to UserBaseline.pnn50,
+                "LF" to UserBaseline.lf,
+                "HF" to UserBaseline.hf
+            )
+
+            metrics.forEach { (name, stat) ->
+                println("$name: ${stat.mean} ± ${stat.stdDev}")
+            }
+            println("Calibrated: ${UserBaseline.isCalibrated}")*/
         }
     }
 }

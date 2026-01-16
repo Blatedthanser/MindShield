@@ -46,7 +46,7 @@ class MultilingualTextClassifier(private val context: Context) {
             val options = OrtSession.SessionOptions()
             options.setIntraOpNumThreads(4) // 并行运算线程数，建议设为 2 到 4
             session = env?.createSession(modelPath, options)
-
+            if (session != null) println("Session Loaded")
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -159,7 +159,7 @@ class MultilingualTextClassifier(private val context: Context) {
     fun analyze(Rawtext: String): String {
         if (session == null || vocab.isEmpty()) return "模型加载中..."
         val text = cleanSocialMediaText(Rawtext)
-        println("###############Cleaned Text:##############\n $text \n\n\n")
+        println("==============Cleaned Text==============\n $text \n\n\n")
         try {
             val tokenIds = tokenize(text)
 
@@ -292,6 +292,7 @@ class MultilingualTextClassifier(private val context: Context) {
                 }
             }
         }
+        println("Vocab Loaded")
     }
 
     private fun copyAssetToCache(context: Context, fileName: String): String {
@@ -328,7 +329,9 @@ class MultilingualTextClassifier(private val context: Context) {
         var text = rawText
 
         // 1. 去除常见的 UI 关键词 (不区分大小写)
-        val uiKeywords = listOf("Reply", "Translate", "Follow", "ago", "mins", "hr", "hrs", "Save", "Say something")
+        val uiKeywords = listOf("Reply", "Translate", "Follow", "ago", "mins", "hr", "hrs", "Save", "Say something",
+            "回复","说点什么...","momo"
+        )
         for (kw in uiKeywords) {
             text = text.replace(Regex("(?i)\\b$kw\\b"), "") // \b 匹配单词边界
         }
@@ -336,6 +339,11 @@ class MultilingualTextClassifier(private val context: Context) {
         text = text.replace("Translate", "")
         // 2. 去除时间戳 (如 18:20)
         text = text.replace(Regex("\\d{1,2}:\\d{2}"), "")
+        text = text.replace(Regex("\\d{1,2}月前"), "")
+        text = text.replace(Regex("\\d{1,2}天前"), "")
+        text = text.replace(Regex("\\d{1,2}小时前"), "")
+        text = text.replace(Regex("\\d{1,2}分钟前"), "")
+        text = text.replace(Regex("展开 \\d{1,4} 条回复"), "")
         text = text.replace("Author liked", "")
         text = text.replace(Regex("[A-Za-z ]+, China"), "")
         text = text.replace("\n\n","\n")
