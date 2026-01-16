@@ -1,6 +1,5 @@
 package com.example.mindshield.ui.screens
 
-import android.content.Context
 import android.content.Intent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,17 +26,23 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
 import com.example.mindshield.ui.theme.*
-import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 import android.provider.Settings
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
+import com.example.mindshield.service.AccessibilityState
 
 @Composable
 fun ProfileScreen(
-    viewModel: OnboardingScreenViewModel,
-    onCalibrationClick: () -> Unit,
-    context: Context
+    onCalibrationClick: () -> Unit
 ) {
+    val context = LocalContext.current
+
+    val isServiceEnabled by remember(context) {
+        AccessibilityState.getEnabledFlow(context)
+    }.collectAsState(initial = false)
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -112,10 +117,10 @@ fun ProfileScreen(
                 trailingContent = {
                     Box(
                         modifier = Modifier
-                            .background(Color(0x33059669), RoundedCornerShape(4.dp))
+                            .background(Color(if (isServiceEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.dp))
                             .padding(horizontal = 6.dp, vertical = 2.dp)
                     ) {
-                        Text("Active", fontSize = 11.sp, color = Emerald800, fontWeight = FontWeight.Bold)
+                        Text(if (isServiceEnabled) "Active" else "Inactive", fontSize = 11.sp, color = if (isServiceEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
                     }
                 }
             )

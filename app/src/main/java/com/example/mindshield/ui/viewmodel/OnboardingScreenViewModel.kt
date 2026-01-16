@@ -3,10 +3,8 @@ package com.example.mindshield.ui.viewmodel
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.calibration.BaselineStorage
-import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.domain.calibration.UserStatisticsTester
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,7 +15,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
-
 
 
 class OnboardingScreenViewModel(application: Application) : AndroidViewModel(application) {

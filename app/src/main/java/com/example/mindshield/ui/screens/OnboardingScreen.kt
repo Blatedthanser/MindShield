@@ -1,4 +1,4 @@
-package com.example.mindshield.ui.Screens
+package com.example.mindshield.ui.screens
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing

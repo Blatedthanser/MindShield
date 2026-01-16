@@ -1,6 +1,5 @@
 package com.example.mindshield.ui
 
-import android.content.Context
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -20,14 +19,11 @@ import com.example.mindshield.ui.screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
-import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 
 @Composable
 fun MainScreen(
-    onboardingScreenViewModel: OnboardingScreenViewModel,
     interventionScreenViewModel: InterventionScreenViewModel,
-    onNavigateToCalibration: () -> Unit,
-    context: Context
+    onNavigateToCalibration: () -> Unit
 ) {
     var activeTab by rememberSaveable { mutableStateOf(AppTab.SHIELD) }
 
@@ -63,13 +59,10 @@ fun MainScreen(
                 AppTab.SHIELD -> ShieldScreen()
                 AppTab.INSIGHT -> InsightScreen()
                 AppTab.INTERVENTION -> InterventionScreen(
-                    context = context,
                     interventionScreenViewModel
                 )
                 AppTab.PROFILE -> ProfileScreen(
-                    viewModel = onboardingScreenViewModel,
-                    onCalibrationClick = onNavigateToCalibration,
-                    context = context
+                    onCalibrationClick = onNavigateToCalibration
                 )
             }
         }

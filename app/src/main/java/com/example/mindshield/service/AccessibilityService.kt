@@ -1,7 +1,6 @@
 package com.example.mindshield.service
 
 import android.accessibilityservice.AccessibilityService
-import android.content.BroadcastReceiver
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo

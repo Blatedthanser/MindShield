@@ -1,41 +1,26 @@
 package com.example.mindshield
 
 import android.Manifest
-import android.accessibilityservice.AccessibilityService
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.projection.MediaProjectionManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.*
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.example.mindshield.data.repository.OnboardingManager
 import com.example.mindshield.domain.calibration.BaselineStorage
 import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.MainScreen
-import com.example.mindshield.ui.Screens.OnboardingScreen
 import com.example.mindshield.ui.theme.MindShieldTheme
-import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
 import kotlinx.coroutines.launch
 import androidx.navigation.compose.NavHost
@@ -43,16 +28,16 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.mindshield.data.preferences.UserSettings
 import com.example.mindshield.ui.screens.CalibrationScreen
+import com.example.mindshield.ui.screens.OnboardingScreen
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModelFactory
 import kotlinx.coroutines.flow.first
-import android.provider.Settings
+
 
 class MainActivity : ComponentActivity() {
 
     private val onboardingScreenViewModel: OnboardingScreenViewModel by viewModels()
 
-    private lateinit var mediaProjectionManager: MediaProjectionManager
     private lateinit var userSettings: UserSettings
     private val interventionScreenViewModel: InterventionScreenViewModel by viewModels {
         InterventionScreenViewModelFactory(userSettings)
@@ -131,13 +116,11 @@ class MainActivity : ComponentActivity() {
                     composable("main") {
                         Box(modifier = Modifier.fillMaxSize()) {
                             MainScreen(
-                                onboardingScreenViewModel,
                                 // 动作 1: 去校准页 (进入下一级)
                                 interventionScreenViewModel,
                                 onNavigateToCalibration = {
                                     navController.navigate("calibration")
-                                },
-                                context = this@MainActivity
+                                }
                             )
 
                         }
@@ -156,26 +139,6 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-            }
-        }
-    }
-
-    @Composable
-    fun FloatingBox(modifier: Modifier = Modifier) {
-        val showFloatingBox by onboardingScreenViewModel.showFloatingBox.collectAsState()
-        val seconds by onboardingScreenViewModel.countdown.collectAsState()
-        AnimatedVisibility(
-            visible = showFloatingBox,
-            enter = fadeIn() + slideInVertically { it },
-            exit = fadeOut() + slideOutVertically { it }
-        ) {
-            Box(
-                modifier = modifier
-                    .size(64.dp)
-                    .background(White40, shape = RoundedCornerShape(16.dp)),
-                contentAlignment = Alignment.Center
-            ) {
-                Text("${if (seconds != null) seconds else "-"}", color = Stone800)
             }
         }
     }
@@ -259,16 +222,4 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    fun isAccessibilityServiceEnabled(
-        context: Context,
-        service: Class<out AccessibilityService>
-    ): Boolean {
-        val expectedComponent = ComponentName(context, service)
-        val enabledServices = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ENABLED_ACCESSIBILITY_SERVICES
-        ) ?: return false
-
-        return enabledServices.contains(expectedComponent.flattenToString())
-    }
 }
