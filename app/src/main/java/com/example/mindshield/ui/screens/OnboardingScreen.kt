@@ -1,4 +1,4 @@
-package com.example.mindshield.ui.Screens
+package com.example.mindshield.ui.screens
 
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.LinearEasing
@@ -278,7 +278,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit,
 
                     Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(48.dp))
                     Text("Finished", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-                    Text("HR: 72  HRV: 45ms", color = Stone600, fontSize = 14.sp)
+                    Text("Average HR: ${"%.1f".format(UserBaseline.hr.mean)}", color = Stone600, fontSize = 14.sp)
                     Text("")  //这个不要删，是用来调整上面两行字的位置的
                 }
             }
