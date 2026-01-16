@@ -6,4 +6,5 @@
     android:canRetrieveWindowContent="true"
     android:description="@string/accessibility_service_description"
     android:notificationTimeout="100"
-    android:packageNames="com.xingin.xhs" />
+    android:packageNames="com.xingin.xhs,com.ss.android.ugc.aweme,com.smile.gifmaker,tv.danmaku.bili" />
+    <!--          支持软件：小红书、抖音、快手、b站            -->
