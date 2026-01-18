@@ -19,6 +19,8 @@ import com.example.mindshield.ui.screens.InterventionScreen
 import com.example.mindshield.ui.screens.*
 import com.example.mindshield.ui.theme.*
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
+import f
+import w
 
 @Composable
 fun MainScreen(
@@ -30,14 +32,14 @@ fun MainScreen(
     Scaffold(
         containerColor = BeigeBackground,
         bottomBar = {
-            NavigationBar(containerColor = BeigeBackground, contentColor = Stone500, tonalElevation = 8.dp) {
+                NavigationBar(containerColor = BeigeBackground, contentColor = Stone500, tonalElevation = 8.w) {
                 @Composable
                 fun TabItem(tab: AppTab, icon: ImageVector, label: String) {
                     NavigationBarItem(
                         selected = activeTab == tab,
                         onClick = { activeTab = tab },
                         icon = { Icon(icon, contentDescription = label) },
-                        label = { Text(label, fontSize = 10.sp, fontWeight = FontWeight.Medium) },
+                        label = { Text(label, fontSize = 12.f, fontWeight = FontWeight.Medium, softWrap = false) },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = Emerald800,
                             selectedTextColor = Emerald800,

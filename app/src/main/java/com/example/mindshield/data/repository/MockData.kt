@@ -15,6 +15,6 @@ val HOURLY_STRESS_DATA = listOf(
 )
 
 val APP_RANKING_DATA = listOf(
-    ChartDataPoint("Weibo", 45), ChartDataPoint("TikTok", 30),
-    ChartDataPoint("Game", 15), ChartDataPoint("Work", 10)
+    ChartDataPoint("Rednote", 45), ChartDataPoint("TikTok", 30),
+    ChartDataPoint("Weibo", 15), ChartDataPoint("Instagram", 10)
 )

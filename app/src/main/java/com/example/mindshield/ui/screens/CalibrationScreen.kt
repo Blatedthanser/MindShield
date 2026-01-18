@@ -13,10 +13,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.domain.calibration.MetricStat
 import com.example.mindshield.domain.calibration.UserBaseline
@@ -34,6 +35,8 @@ import com.example.mindshield.ui.theme.BeigeBackground
 import com.example.mindshield.ui.theme.Stone500
 import com.example.mindshield.ui.theme.Stone600
 import com.example.mindshield.ui.theme.Stone900
+import f
+import w
 
 @Composable
 fun CalibrationScreen(
@@ -48,21 +51,23 @@ fun CalibrationScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .padding(horizontal = 16.w, vertical = 24.w),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { onBackClick() },
-                    tint = Stone900
-                )
-                Spacer(modifier = Modifier.width(16.dp))
+                IconButton(
+                    onClick = { onBackClick() },
+                    modifier = Modifier.size(40.w) // 按钮整体大小（触摸区域，通常比图标大）
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        modifier = Modifier.size(24.w), // 图标视觉大小
+                        tint = Stone900
+                    )
+                }
                 Text(
                     text = "Calibration",
-                    fontSize = 20.sp,
+                    fontSize = 24.f,
                     fontWeight = FontWeight.Bold,
                     color = Stone900
                 )
@@ -73,13 +78,12 @@ fun CalibrationScreen(
             modifier = Modifier
                 .padding(paddingValues)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
+                .padding(horizontal = 16.w),
+            verticalArrangement = Arrangement.spacedBy(24.w)
         ) {
-            Spacer(modifier = Modifier.height(5.dp))
             // 1. BASELINE DATA DISPLAY
             SettingsGroup(title = "Current Baseline Stats") {
-                Column(modifier = Modifier.padding(16.dp)) {
+                Column(modifier = Modifier.padding(16.w)) {
                     val isCalibrated by UserBaseline
                         .isCalibrated
                         .collectAsState()
@@ -89,12 +93,12 @@ fun CalibrationScreen(
                             StatItem(modifier = Modifier.weight(1f), label = "HR (bpm)", stat = UserBaseline.hr)
                             StatItem(modifier = Modifier.weight(1f), label = "RMSSD (ms)", stat = UserBaseline.rmssd)
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.w))
                         Row(modifier = Modifier.fillMaxWidth()) {
                             StatItem(modifier = Modifier.weight(1f), label = "SDNN (ms)", stat = UserBaseline.sdnn)
                             StatItem(modifier = Modifier.weight(1f), label = "pNN50 (%)", stat = UserBaseline.pnn50)
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.w))
                         Row(modifier = Modifier.fillMaxWidth()) {
                             StatItem(modifier = Modifier.weight(1f), label = "LF Power", stat = UserBaseline.lf)
                             StatItem(modifier = Modifier.weight(1f), label = "HF Power", stat = UserBaseline.hf)
@@ -104,7 +108,7 @@ fun CalibrationScreen(
                         Box(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(24.dp),
+                                .padding(24.w),
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
@@ -142,7 +146,7 @@ fun CalibrationScreen(
                 text = "Last updated: Just now\nStandard deviation implies variability range.",
                 modifier = Modifier.fillMaxWidth(),
                 color = Stone500,
-                fontSize = 12.sp,
+                fontSize = 12.f,
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center,
                 lineHeight = 16.sp
             )
@@ -162,26 +166,26 @@ fun StatItem(
     Column(modifier = modifier) {
         Text(
             text = label,
-            fontSize = 12.sp,
+            fontSize = 12.f,
             color = Stone500,
             fontWeight = FontWeight.Medium,
             letterSpacing = 0.5.sp
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(4.w))
         Row(verticalAlignment = Alignment.Bottom) {
             Text(
                 text = "%.1f".format(stat.mean),
-                fontSize = 20.sp,
+                fontSize = 20.f,
                 fontWeight = FontWeight.Bold,
                 color = Stone900
             )
-            Spacer(modifier = Modifier.width(4.dp))
+            Spacer(modifier = Modifier.width(4.w))
             Text(
                 text = "± %.1f".format(stat.stdDev),
-                fontSize = 12.sp,
+                fontSize = 12.f,
                 fontWeight = FontWeight.Normal,
                 color = Stone600,
-                modifier = Modifier.padding(bottom = 2.dp) // Align baseline
+                modifier = Modifier.padding(bottom = 2.w) // Align baseline
             )
         }
     }

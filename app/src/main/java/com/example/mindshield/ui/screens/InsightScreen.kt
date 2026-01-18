@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -47,7 +48,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.data.repository.APP_RANKING_DATA
 import com.example.mindshield.data.repository.HOURLY_STRESS_DATA
@@ -60,8 +60,10 @@ import com.example.mindshield.ui.theme.Stone500
 import com.example.mindshield.ui.theme.Stone600
 import com.example.mindshield.ui.theme.Stone800
 import com.example.mindshield.ui.theme.Stone900
+import f
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import w
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,16 +96,16 @@ fun InsightScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .background(BeigeBackground),
-            contentPadding = PaddingValues(24.dp)
+            contentPadding = PaddingValues(24.w)
         ) {
             // --- Page Title ---
             item {
                 Text(
                     text = "Insight",
-                    fontSize = 24.sp,
+                    fontSize = 24.f,
                     fontWeight = FontWeight.Bold,
                     color = Stone800,
-                    modifier = Modifier.padding(bottom = 24.dp)
+                    modifier = Modifier.padding(bottom = 24.w)
                 )
             }
             // --- 1. Stress Time Distribution Chart ---
@@ -112,27 +114,27 @@ fun InsightScreen() {
                     colors = CardDefaults.cardColors(containerColor = CardBeige),//Color(0xFFEADDCF)
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(220.dp)
-                        .border(1.dp, Stone300, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp)
+                        .height(220.w)
+                        .border(1.w, Stone300, RoundedCornerShape(12.w)),
+                    shape = RoundedCornerShape(12.w)
                 ) {
-                    Column(Modifier.padding(16.dp)) {
+                    Column(Modifier.padding(16.w)) {
                         // Chart Header
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(
                                 imageVector = Icons.Outlined.Schedule,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(16.w),
                                 tint = Color(0xFF4F46E5)
                             )
-                            Spacer(Modifier.width(8.dp))
-                            Text("Stress Time Distribution", fontSize = 14.sp, color = Stone600)
+                            Spacer(Modifier.width(8.w))
+                            Text("Stress Time Distribution", fontSize = 14.f, color = Stone600)
                         }
-                        Spacer(Modifier.height(16.dp))
+                        Spacer(Modifier.height(16.w))
 
                         // Bar Chart Rendering
                         Row(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier.fillMaxWidth().height(180.w),
                             verticalAlignment = Alignment.Bottom,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -142,24 +144,25 @@ fun InsightScreen() {
                             }
 
                             stressData.forEach { data ->
-                                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier.wrapContentHeight()) {
                                     Box(
                                         modifier = Modifier
-                                            .width(24.dp)
-                                            .height((data.value * 15).dp)
+                                            .width(24.w)
+                                            .height((data.value * 15).w)
                                             .background(
                                                 if (data.value == hourlyMax) Orange600 else Color(0xFFA8A29E),
-                                                RoundedCornerShape(4.dp, 4.dp, 0.dp, 0.dp)
+                                                RoundedCornerShape(4.w, 4.w, 0.w, 0.w)
                                             )
                                     )
-                                    Spacer(Modifier.height(4.dp))
-                                    Text(data.name, fontSize = 10.sp, color = Stone600)
+                                    Spacer(Modifier.height(4.w))
+                                    Text(data.name, fontSize = 10.f, color = Stone600)
                                 }
                             }
                         }
                     }
                 }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(24.w))
             }
 
             // --- 2. Most Irritable Apps Ranking (New Section) ---
@@ -168,66 +171,66 @@ fun InsightScreen() {
                     colors = CardDefaults.cardColors(containerColor = CardBeige),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .border(1.dp, Stone300, RoundedCornerShape(12.dp)),
-                    shape = RoundedCornerShape(12.dp)
+                        .border(1.w, Stone300, RoundedCornerShape(12.w)),
+                    shape = RoundedCornerShape(12.w)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp)) {
+                    Column(modifier = Modifier.padding(16.w)) {
                         // Section Header
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(bottom = 16.w)) {
                             Icon(
                                 imageVector = Icons.Outlined.Warning,
                                 contentDescription = null,
-                                modifier = Modifier.size(16.dp),
+                                modifier = Modifier.size(16.w),
                                 tint = Orange600
                             )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(8.w))
                             Text(
                                 text = "Most Irritable Apps",
-                                fontSize = 14.sp,
+                                fontSize = 14.f,
                                 color = Stone600
                             )
                         }
 
                         // Ranking List
-                        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Column(verticalArrangement = Arrangement.spacedBy(12.w)) {
                             // --- [修改] 使用 appRankingData 状态 ---
                             appRankingData.forEachIndexed { index, item ->
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     // Rank Number (e.g., 01, 02)
                                     Text(
                                         text = "0${index + 1}",
-                                        fontSize = 12.sp,
+                                        fontSize = 12.f,
                                         fontFamily = FontFamily.Monospace,
                                         color = Stone500,
-                                        modifier = Modifier.width(28.dp)
+                                        modifier = Modifier.width(28.w)
                                     )
 
                                     Column(modifier = Modifier.weight(1f)) {
                                         // App Name & Percentage
                                         Row(
-                                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.dp),
+                                            modifier = Modifier.fillMaxWidth().padding(bottom = 4.w),
                                             horizontalArrangement = Arrangement.SpaceBetween
                                         ) {
-                                            Text(item.name, fontSize = 12.sp, color = Stone900)
-                                            Text("${item.value}%", fontSize = 12.sp, color = Stone500)
+                                            Text(item.name, fontSize = 12.f, color = Stone900)
+                                            Text("${item.value}%", fontSize = 12.f, color = Stone500)
                                         }
 
                                         // Progress Bar Track
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .height(6.dp)
-                                                .clip(RoundedCornerShape(3.dp))
+                                                .height(6.w)
+                                                .clip(RoundedCornerShape(3.w))
                                                 .background(Stone300)
                                         ) {
                                             // Progress Bar Fill
                                             Box(
                                                 modifier = Modifier
                                                     .fillMaxWidth(item.value / 100f)
-                                                    .height(6.dp)
+                                                    .height(6.w)
                                                     .background(
                                                         color = Orange600.copy(alpha = 1f - (index * 0.2f)),
-                                                        shape = RoundedCornerShape(3.dp)
+                                                        shape = RoundedCornerShape(3.w)
                                                     )
                                             )
                                         }
@@ -237,17 +240,17 @@ fun InsightScreen() {
                         }
                     }
                 }
-                Spacer(Modifier.height(24.dp))
+                Spacer(Modifier.height(24.w))
             }
 
             // --- 3. Emotional Timeline Header ---
             item {
                 Text(
                     text = "Emotional Timeline",
-                    fontSize = 18.sp,
+                    fontSize = 18.f,
                     fontWeight = FontWeight.SemiBold,
                     color = Stone800,
-                    modifier = Modifier.padding(bottom = 16.dp)
+                    modifier = Modifier.padding(bottom = 16.w)
                 )
             }
 
@@ -257,11 +260,11 @@ fun InsightScreen() {
                 val isExpanded = expandedEventId == event.id
                 Row(Modifier.height(IntrinsicSize.Min)) {
                     // Timeline Visuals (Left)
-                    Box(Modifier.width(16.dp).fillMaxHeight()) {
+                    Box(Modifier.width(16.w).fillMaxHeight()) {
                         // Vertical Line
                         Box(
                             Modifier
-                                .width(2.dp)
+                                .width(2.w)
                                 .fillMaxHeight()
                                 .background(Stone300)
                                 .align(Alignment.Center)
@@ -269,14 +272,14 @@ fun InsightScreen() {
                         // Dot
                         Box(
                             Modifier
-                                .size(12.dp)
+                                .size(12.w)
                                 .background(BeigeBackground)
-                                .border(2.dp, Color.Red, CircleShape)
+                                .border(2.w, Color.Red, CircleShape)
                                 .align(Alignment.TopCenter)
                         ) {
                             Box(
                                 Modifier
-                                    .size(6.dp)
+                                    .size(6.w)
                                     .background(Color.Red, CircleShape)
                                     .align(Alignment.Center)
                             )
@@ -286,18 +289,18 @@ fun InsightScreen() {
                     // Event Card (Right)
                     Card(
                         modifier = Modifier
-                            .padding(start = 8.dp, bottom = 16.dp)
+                            .padding(start = 8.w, bottom = 16.w)
                             .fillMaxWidth()
                             .clickable { expandedEventId = if (isExpanded) null else event.id },
                         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.6f)),
-                        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.5f))
+                        border = BorderStroke(1.w, Color.White.copy(alpha = 0.5f))
                     ) {
-                        Column(Modifier.padding(16.dp)) {
+                        Column(Modifier.padding(16.w)) {
                             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                                 Column {
                                     Text(
                                         text = event.time,
-                                        fontSize = 12.sp,
+                                        fontSize = 12.f,
                                         fontFamily = FontFamily.Monospace,
                                         color = Stone500
                                     )
@@ -316,17 +319,17 @@ fun InsightScreen() {
 
                             // Expanded OCR Content
                             AnimatedVisibility(visible = isExpanded) {
-                                Column(modifier = Modifier.padding(top = 12.dp)) {
+                                Column(modifier = Modifier.padding(top = 12.w)) {
                                     Box(
                                         modifier = Modifier
-                                            .background(Color(0xFFF5F5F4), RoundedCornerShape(8.dp))
-                                            .border(1.dp, Color(0xFFE7E5E4), RoundedCornerShape(8.dp))
-                                            .padding(12.dp)
+                                            .background(Color(0xFFF5F5F4), RoundedCornerShape(8.w))
+                                            .border(1.w, Color(0xFFE7E5E4), RoundedCornerShape(8.w))
+                                            .padding(12.w)
                                             .fillMaxWidth()
                                     ) {
                                         Text(
                                             text = "\"${event.ocrSnippet}\"",
-                                            fontSize = 14.sp,
+                                            fontSize = 14.f,
                                             fontStyle = FontStyle.Italic,
                                             color = Stone500
                                         )

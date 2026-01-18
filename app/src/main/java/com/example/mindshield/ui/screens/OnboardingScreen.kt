@@ -52,8 +52,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mindshield.R
 import com.example.mindshield.ui.theme.BeigeBackground
 import com.example.mindshield.ui.theme.Emerald600
@@ -66,6 +64,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.viewmodel.OnboardingScreenViewModel
+import w
+import f
 
 // =======================
 // 1. 核心引导页容器
@@ -112,31 +112,31 @@ fun OnboardingScreen(onFinish: () -> Unit, viewModel: OnboardingScreenViewModel)
 @Composable
 fun WelcomePage(onNext: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier.fillMaxSize().padding(32.w),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Image(
             painter = painterResource(id = R.drawable.ic_launcher_foreground),
             contentDescription = "App Logo",
-            modifier = Modifier.size(120.dp).background(Emerald600, CircleShape).padding(20.dp),
+            modifier = Modifier.size(120.w).background(Emerald600, CircleShape).padding(20.w),
             contentScale = ContentScale.Fit
         )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text("Welcome to MindShield", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Stone900)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.w))
+        Text("Welcome to MindShield", fontSize = 28.f, fontWeight = FontWeight.Bold, color = Stone900)
+        Spacer(modifier = Modifier.height(16.w))
         Text(
             "your well-rounded mental health protector\nLet's begin to establish your boundaries.",
             textAlign = TextAlign.Center,
             color = Stone600,
-            fontSize = 16.sp
+            fontSize = 16.f
         )
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(80.w))
         Button(
             onClick = onNext,
             // 修改：透明度颜色
             colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.w)
         ) {
             Text("NEXT")
         }
@@ -149,7 +149,7 @@ fun WelcomePage(onNext: () -> Unit) {
 @Composable
 fun FeatureIntroPage(onNext: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier.fillMaxSize().padding(32.w),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -157,24 +157,24 @@ fun FeatureIntroPage(onNext: () -> Unit) {
             imageVector = Icons.Outlined.AdminPanelSettings,
             contentDescription = "Privacy",
             tint = Emerald600,
-            modifier = Modifier.size(90.dp)
+            modifier = Modifier.size(90.w)
         )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text("We Care About Your Privacy", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.w))
+        Text("We Care About Your Privacy", fontSize = 24.f, fontWeight = FontWeight.Bold, color = Stone900)
+        Spacer(modifier = Modifier.height(16.w))
         Text(
             "Locally Deployed Model\nNo data submitted\nNo worry about your privacy",
             textAlign = TextAlign.Center,
             color = Stone600,
-            fontSize = 16.sp,
-            lineHeight = 24.sp
+            fontSize = 16.f,
+            lineHeight = 24.f
         )
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(80.w))
         Button(
             onClick = onNext,
             // 修改：透明度颜色
             colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.w)
         ) {
             Text("NEXT")
         }
@@ -225,68 +225,68 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit,
     )
 
     Column(
-        modifier = Modifier.fillMaxSize().padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.w),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(32.dp))
-            Text("Baseline Calibration", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(32.w))
+            Text("Baseline Calibration", fontSize = 24.f, fontWeight = FontWeight.Bold, color = Stone900)
+            Spacer(modifier = Modifier.height(8.w))
             Text(
                 "We need to test your standard HR and HRV\nto build your personal profile\nPLease STAY CALM during the test.",
                 textAlign = TextAlign.Center,
                 color = Stone600,
-                fontSize = 14.sp
+                fontSize = 14.f
             )
         }
 
         Box(contentAlignment = Alignment.Center) {
             Box(modifier = Modifier
-                .size(300.dp)
+                .size(300.w)
                 .background(Brush.radialGradient(listOf(Emerald600.copy(0.2f), Color.Transparent))))
 
             Box(modifier = Modifier
-                .size(256.dp)
+                .size(256.w)
                 .scale(scale)
-                .border(2.dp, Emerald600.copy(0.3f), CircleShape))
+                .border(2.w, Emerald600.copy(0.3f), CircleShape))
 
             Box(modifier = Modifier
-                .size(192.dp)
-                .border(4.dp, Emerald600.copy(0.4f), CircleShape))
+                .size(192.w)
+                .border(4.w, Emerald600.copy(0.4f), CircleShape))
 
             if (isTesting || isFinished) {
                 CircularProgressIndicator(
                     progress = { if(isFinished) 1f else progressAnim.value },
-                    modifier = Modifier.size(192.dp),
+                    modifier = Modifier.size(192.w),
                     color = Emerald600,
-                    strokeWidth = 4.dp,
+                    strokeWidth = 4.w,
                     trackColor = Color.Transparent
                 )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 if (!isTesting && !isFinished) {
-                    Icon(Icons.Outlined.ArrowCircleRight, null, tint = Stone500, modifier = Modifier.size(48.dp))
+                    Icon(Icons.Outlined.ArrowCircleRight, null, tint = Stone500, modifier = Modifier.size(48.w))
                     Text("I'm prepared.", color = Stone500, fontWeight = FontWeight.Medium)
                 } else if (isTesting) {
-                    Text("$timer", fontSize = 64.sp, fontWeight = FontWeight.Bold, color = Stone800)
+                    Text("$timer", fontSize = 64.f, fontWeight = FontWeight.Bold, color = Stone800)
                     Text("  Collecting...", color = Emerald600, fontWeight = FontWeight.Medium)
                 } else {
                     // 修改：这里添加一个Spacer，把下面的内容整体下移
-                    Spacer(modifier = Modifier.height(24.dp))
+                    Spacer(modifier = Modifier.height(24.w))
 
-                    Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(48.dp))
-                    Text("Finished", fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Stone900)
-                    Text("Average HR: ${"%.1f".format(UserBaseline.hr.mean)}", color = Stone600, fontSize = 14.sp)
+                    Icon(Icons.Filled.CheckCircle, null, tint = Emerald600, modifier = Modifier.size(48.w))
+                    Text("Finished", fontSize = 24.f, fontWeight = FontWeight.Bold, color = Stone900)
+                    Text("Average HR: ${"%.1f".format(UserBaseline.hr.mean)}", color = Stone600, fontSize = 14.f)
                     Text("")  //这个不要删，是用来调整上面两行字的位置的
                 }
             }
         }
 
         Column(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 32.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+            modifier = Modifier.fillMaxWidth().padding(bottom = 32.w),
+            verticalArrangement = Arrangement.spacedBy(16.w)
         ) {
             if (!isTesting && !isFinished) {
                 Button(
@@ -296,38 +296,38 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit,
                     },
                     // 修改：透明度颜色
                     colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                    modifier = Modifier.fillMaxWidth().height(56.w)
                 ) {
-                    Text("Start the Test", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Text("Start the Test", fontSize = 18.f, fontWeight = FontWeight.SemiBold)
                 }
             } else if (isTesting) {
                 Button(
                     onClick = {},
                     enabled = false,
                     colors = ButtonDefaults.buttonColors(containerColor = Stone300),
-                    modifier = Modifier.fillMaxWidth().height(56.dp)
+                    modifier = Modifier.fillMaxWidth().height(56.w)
                 ) {
-                    Text("   Please Stay Calm...", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                    Text("   Please Stay Calm...", fontSize = 18.f, fontWeight = FontWeight.SemiBold)
                 }
             } else {
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.w)) {
                     OutlinedButton(
                         onClick = {
                             isFinished = false
                             isTesting = true
                             viewModel.startCalibration()
                         },
-                        modifier = Modifier.weight(1f).height(56.dp)
+                        modifier = Modifier.weight(1f).height(56.w)
                     ) {
-                        Text("Re-test", color = Stone600, fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Re-test", color = Stone600, fontSize = 18.f, fontWeight = FontWeight.SemiBold)
                     }
                     Button(
                         onClick = onCalibrationComplete,
                         // 修改：透明度颜色
                         colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-                        modifier = Modifier.weight(1f).height(56.dp)
+                        modifier = Modifier.weight(1f).height(56.w)
                     ) {
-                        Text("Finish Setting", fontSize = 18.sp, fontWeight = FontWeight.SemiBold)
+                        Text("Finish Setting", fontSize = 18.f, fontWeight = FontWeight.SemiBold)
                     }
                 }
             }
@@ -341,7 +341,7 @@ fun CalibrationPage(onCalibrationComplete: () -> Unit,
 @Composable
 fun ConclusionPage(onEnterApp: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize().padding(32.dp),
+        modifier = Modifier.fillMaxSize().padding(32.w),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -349,25 +349,25 @@ fun ConclusionPage(onEnterApp: () -> Unit) {
             imageVector = Icons.Outlined.VerifiedUser,
             contentDescription = null,
             tint = Emerald600,
-            modifier = Modifier.size(90.dp)
+            modifier = Modifier.size(90.w)
         )
-        Spacer(modifier = Modifier.height(40.dp))
-        Text("Everything is ready", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Stone900)
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(40.w))
+        Text("Everything is ready", fontSize = 28.f, fontWeight = FontWeight.Bold, color = Stone900)
+        Spacer(modifier = Modifier.height(16.w))
         Text(
             "Your personal profile is established.\nMindShield will be by your side.",
             textAlign = TextAlign.Center,
             color = Stone600,
-            fontSize = 16.sp
+            fontSize = 16.f
         )
-        Spacer(modifier = Modifier.height(80.dp))
+        Spacer(modifier = Modifier.height(80.w))
         Button(
             onClick = onEnterApp,
             // 修改：透明度颜色
             colors = ButtonDefaults.buttonColors(containerColor = Emerald600),
-            modifier = Modifier.fillMaxWidth().height(56.dp)
+            modifier = Modifier.fillMaxWidth().height(56.w)
         ) {
-            Text("Enter MindShield", fontSize = 16.sp)
+            Text("Enter MindShield", fontSize = 16.f)
         }
     }
 }
