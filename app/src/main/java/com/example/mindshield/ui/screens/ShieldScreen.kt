@@ -6,7 +6,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
@@ -18,12 +21,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState.*
 import com.example.mindshield.ui.theme.*
+import f
+import w
 
 @Composable
 fun ShieldScreen() {
@@ -56,6 +59,7 @@ fun ShieldScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = 20.w)
             .background(BeigeBackground),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -63,18 +67,18 @@ fun ShieldScreen() {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.w),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.Watch, null, Modifier.size(14.dp), tint = if (WearableSimulator.isConnected) animatedColor else Stone600)
-                Spacer(Modifier.width(4.dp))
-                Text(if (WearableSimulator.isConnected) "Connected" else "Not Connected", fontSize = 12.sp, color = Stone600)
+                Icon(Icons.Outlined.Watch, null, Modifier.size(14.w), tint = if (WearableSimulator.isConnected) animatedColor else Stone600)
+                Spacer(Modifier.width(4.w))
+                Text(if (WearableSimulator.isConnected) "Connected" else "Not Connected", fontSize = 12.f, color = Stone600)
             }
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(Icons.Outlined.BatteryStd, null, Modifier.size(14.dp), tint = Stone600)
-                Text("84%", fontSize = 12.sp, color = Stone600, modifier = Modifier.padding(horizontal = 4.dp))
-                Icon(Icons.Outlined.Lock, null, Modifier.size(14.dp), tint = Emerald700)
+                Icon(Icons.Outlined.BatteryStd, null, Modifier.size(14.w), tint = Stone600)
+                Text("84%", fontSize = 12.f, color = Stone600, modifier = Modifier.padding(horizontal = 4.w))
+                Icon(Icons.Outlined.Lock, null, Modifier.size(14.w), tint = Emerald700)
             }
         }
 
@@ -82,62 +86,63 @@ fun ShieldScreen() {
         Column(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // Breathing Circle
             Box(contentAlignment = Alignment.Center) {
                 Box(modifier = Modifier
-                    .size(300.dp)
+                    .size(300.w)
                     .background(Brush.radialGradient(listOf(animatedColor.copy(0.2f), Color.Transparent))))
                 Box(modifier = Modifier
-                    .size(256.dp)
+                    .size(256.w)
                     .scale(scale)
-                    .border(2.dp, animatedColor.copy(0.3f), CircleShape))
+                    .border(2.w, animatedColor.copy(0.3f), CircleShape))
                 Box(modifier = Modifier
-                    .size(192.dp)
-                    .border(4.dp, animatedColor.copy(0.4f), CircleShape))
+                    .size(192.w)
+                    .border(4.w, animatedColor.copy(0.4f), CircleShape))
 
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.dp))
-                    Text("${if (liveHr == 0) "--" else liveHr}", fontSize = 48.sp, color = Stone800, fontWeight = FontWeight.Light)
-                    Text("BPM", fontSize = 14.sp, color = Stone500)
+                    Icon(Icons.Outlined.MonitorHeart, null, tint = themeColor, modifier = Modifier.size(32.w))
+                    Text("${if (liveHr == 0) "--" else liveHr}", fontSize = 48.f, color = Stone800, fontWeight = FontWeight.Light)
+                    Text("BPM", fontSize = 14.f, color = Stone500)
                     Text(
                         text = when  {
                             liveHr > 115 -> "HIGH"
                             liveHr > 70 -> "MODERATE"
                             else -> "LOW"
                         },
-                        fontSize = 12.sp,
+                        fontSize = 12.f,
                         color = animatedColor,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 2.sp,
-                        modifier = Modifier.padding(top = 8.dp)
+                        letterSpacing = 2.f,
+                        modifier = Modifier.padding(top = 8.w)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(72.dp))
+            Spacer(modifier = Modifier.height(72.w))
 
             // Bottom Card
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = 24.w)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = animatedColor.copy(alpha = 0.1f).compositeOver(BeigeBackground)),
-                border = BorderStroke(1.dp, Color.White.copy(0.5f))
+                border = BorderStroke(1.w, Color.White.copy(0.5f))
 
             ){
 
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(10.dp),
+                        .padding(10.w),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    Text("HRV-Based Mood Status", color = Stone600, fontWeight = FontWeight.Medium, fontSize = 12.sp)
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("HRV-Based Mood Status", color = Stone600, fontWeight = FontWeight.Medium, fontSize = 12.f)
+                    Spacer(modifier = Modifier.height(8.w))
                     Text(
                         text = when (state) {
                             CALM_OR_HAPPY -> "CALM OR HAPPY"
@@ -147,44 +152,44 @@ fun ShieldScreen() {
                         },
                         color = Stone800,
                         fontWeight = FontWeight.Bold,
-                        fontSize = 20.sp
+                        fontSize = 20.f
                     )
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(8.w))
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(24.w))
 
             Card(
                 modifier = Modifier
-                    .padding(horizontal = 24.dp)
+                    .padding(horizontal = 24.w)
                     .fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = White40),
-                border = BorderStroke(1.dp, Color.White.copy(0.5f))
+                border = BorderStroke(1.w, Color.White.copy(0.5f))
             ) {
-                Column(Modifier.padding(20.dp)) {
+                Column(Modifier.padding(20.w)) {
                     // Title Row
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Box(
                             modifier = Modifier
-                                .size(32.dp)
+                                .size(32.w)
                                 .background(animatedColor.copy(0.2f), CircleShape),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Outlined.VerifiedUser, null, tint = themeColor, modifier = Modifier.size(20.dp))
+                            Icon(Icons.Outlined.VerifiedUser, null, tint = themeColor, modifier = Modifier.size(20.w))
                         }
-                        Spacer(Modifier.width(12.dp))
-                        Column {
-                            Text("MindShield Active", color = Stone800, fontWeight = FontWeight.Medium)
-                            Text("Monitoring emotional fluctuations...", color = Stone600, fontSize = 12.sp)
+                        Spacer(Modifier.width(12.w))
+                        Column(verticalArrangement = Arrangement.spacedBy(4.w)) {
+                            Text("MindShield Active", color = Stone800, fontSize = 16.f, fontWeight = FontWeight.Medium, lineHeight = 22.f)
+                            Text("Monitoring emotional fluctuations...", color = Stone600, fontSize = 12.f, lineHeight = 18.f)
                         }
                     }
 
                     // Divider
                     Divider(
-                        modifier = Modifier.padding(vertical = 16.dp),
+                        modifier = Modifier.padding(vertical = 16.w),
                         color = Stone300.copy(alpha = 0.5f),
-                        thickness = 1.dp
+                        thickness = 1.w
                     )
 
                     // Stats Row
@@ -192,14 +197,14 @@ fun ShieldScreen() {
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text("Interventions Today", color = Stone600, fontSize = 14.sp)
-                        Text("3", color = Stone800, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                        Text("Interventions Today", color = Stone600, fontSize = 14.f)
+                        Text("3", color = Stone800, fontWeight = FontWeight.Bold, fontSize = 14.f)
                     }
                 }
             }
         }
 
         // Bottom Spacer to lift content slightly above nav bar area if needed
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(16.w))
     }
 }

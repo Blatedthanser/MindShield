@@ -1,5 +1,6 @@
 package com.example.mindshield
 
+import ScreenAdapter
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -85,61 +86,66 @@ class MainActivity : ComponentActivity() {
         checkPermissionsAndStart()
 
         setContent {
-            val navController = rememberNavController()
-            // 打开时执行一次
-            val startDest = if (showMainScreenState == true) "main" else "onboarding"
-            MindShieldTheme {
-                // 重复执行
-                NavHost(
-                    navController = navController,
-                    startDestination = startDest // 动态决定起始页
-                ){
-                    // === 页面 A: 引导页 (Onboarding) ===
-                    composable("onboarding") {
-                        OnboardingScreen(
-                            viewModel = onboardingScreenViewModel,
-                            onFinish = {
-                                // 完成引导 -> 去主页
-                                lifecycleScope.launch {
-                                    onboardingManager.completeOnboarding()
-                                }
-                                // 【关键】跳转到 main，并把 onboarding 从后退栈里移除
-                                // 这样用户在主页按返回键不会回到引导页
-                                navController.navigate("main") {
-                                    popUpTo("onboarding") { inclusive = true }
+            BoxWithConstraints {
+                ScreenAdapter(actualWidth = maxWidth) {
+                    val navController = rememberNavController()
+                    // 打开时执行一次
+                    val startDest = if (showMainScreenState == true) "main" else "onboarding"
+                    MindShieldTheme {
+                        // 重复执行
+                        NavHost(
+                            navController = navController,
+                            startDestination = startDest // 动态决定起始页
+                        ){
+                            // === 页面 A: 引导页 (Onboarding) ===
+                            composable("onboarding") {
+                                OnboardingScreen(
+                                    viewModel = onboardingScreenViewModel,
+                                    onFinish = {
+                                        // 完成引导 -> 去主页
+                                        lifecycleScope.launch {
+                                            onboardingManager.completeOnboarding()
+                                        }
+                                        // 【关键】跳转到 main，并把 onboarding 从后退栈里移除
+                                        // 这样用户在主页按返回键不会回到引导页
+                                        navController.navigate("main") {
+                                            popUpTo("onboarding") { inclusive = true }
+                                        }
+                                    }
+                                )
+                            }
+
+                            // === 页面 B: 主页 (Main) ===
+                            composable("main") {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    MainScreen(
+                                        // 动作 1: 去校准页 (进入下一级)
+                                        interventionScreenViewModel,
+                                        onNavigateToCalibration = {
+                                            navController.navigate("calibration")
+                                        }
+                                    )
+
                                 }
                             }
-                        )
-                    }
 
-                    // === 页面 B: 主页 (Main) ===
-                    composable("main") {
-                        Box(modifier = Modifier.fillMaxSize()) {
-                            MainScreen(
-                                // 动作 1: 去校准页 (进入下一级)
-                                interventionScreenViewModel,
-                                onNavigateToCalibration = {
-                                    navController.navigate("calibration")
-                                }
-                            )
-
+                            // === 页面 C: 校准页 (Calibration) ===
+                            composable("calibration") {
+                                CalibrationScreen(
+                                    onBackClick = { navController.popBackStack() },
+                                    onRetestClick = { navController.navigate("onboarding") },
+                                    onClearClick = {
+                                        storage.clearBaseline()
+                                        UserBaseline.reset()
+                                    }
+                                )
+                            }
                         }
-                    }
 
-                    // === 页面 C: 校准页 (Calibration) ===
-                    composable("calibration") {
-                        CalibrationScreen(
-                            onBackClick = { navController.popBackStack() },
-                            onRetestClick = { navController.navigate("onboarding") },
-                            onClearClick = {
-                                storage.clearBaseline()
-                                UserBaseline.reset()
-                            }
-                        )
                     }
                 }
-
             }
+
         }
     }
 

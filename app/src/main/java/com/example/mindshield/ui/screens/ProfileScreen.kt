@@ -24,7 +24,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.ui.theme.*
 import android.provider.Settings
@@ -33,6 +32,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.mindshield.service.AccessibilityState
+import f
+import w
 
 @Composable
 fun ProfileScreen(
@@ -48,12 +49,12 @@ fun ProfileScreen(
             .fillMaxSize()
             .background(WarmBeige)
             .verticalScroll(rememberScrollState())
-            .padding(24.dp)
-            .padding(bottom = 80.dp)
+            .padding(24.w)
+            .padding(bottom = 80.w)
     ) {
         Text(
             text = "Profile",
-            fontSize = 24.sp,
+            fontSize = 24.f,
             fontWeight = FontWeight.Bold,
             color = Stone900
         )
@@ -61,24 +62,24 @@ fun ProfileScreen(
         // --- User Header ---
         Row(
             modifier = Modifier
-                .padding(vertical = 32.dp)
+                .padding(vertical = 32.w)
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Avatar
             Box(
                 modifier = Modifier
-                    .size(64.dp)
+                    .size(64.w)
                     .clip(CircleShape)
                     .background(Emerald800), // Dark green
                 contentAlignment = Alignment.Center
             ) {
                 Text("MS", color = Color.White, fontWeight = FontWeight.Bold, fontSize = 20.sp)
             }
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(16.w))
             Column {
-                Text("MindShield User", fontWeight = FontWeight.Medium, fontSize = 16.sp, color = Stone900)
-                Text("Premium Plan", fontSize = 14.sp, color = Stone600)
+                Text("MindShield User", fontWeight = FontWeight.Medium, fontSize = 16.f, color = Stone900)
+                Text("Premium Plan", fontSize = 14.f, color = Stone600)
             }
         }
 
@@ -101,7 +102,7 @@ fun ProfileScreen(
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(24.w))
 
         // --- Permissions Group ---
         SettingsGroup(title = "Permissions") {
@@ -117,10 +118,10 @@ fun ProfileScreen(
                 trailingContent = {
                     Box(
                         modifier = Modifier
-                            .background(Color(if (isServiceEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                            .background(Color(if (isServiceEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.w))
+                            .padding(horizontal = 6.w, vertical = 2.w)
                     ) {
-                        Text(if (isServiceEnabled) "Active" else "Inactive", fontSize = 11.sp, color = if (isServiceEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
+                        Text(if (isServiceEnabled) "Active" else "Inactive", fontSize = 11.f, color = if (isServiceEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
                     }
                 }
             )
@@ -131,12 +132,12 @@ fun ProfileScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 48.dp),
+                .padding(top = 48.w),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text("MindShield v0.1.0 Preview", fontSize = 12.sp, color = Stone500)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text("Privacy Policy • Terms of Service", fontSize = 12.sp, color = Stone500)
+            Text("MindShield v0.1.0 Preview", fontSize = 12.f, color = Stone500)
+            Spacer(modifier = Modifier.height(4.w))
+            Text("Privacy Policy • Terms of Service", fontSize = 12.f, color = Stone500)
         }
     }
 }
@@ -147,21 +148,21 @@ fun SettingsGroup(title: String, content: @Composable () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(16.w))
             .background(CardBeige)
-            .border(1.dp, Color(0xFFD6D3D1), RoundedCornerShape(16.dp))
+            .border(1.w, Color(0xFFD6D3D1), RoundedCornerShape(16.w))
     ) {
         // Group Header
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color(0x4DCA8A04).copy(alpha = 0.1f)) // Slight dark overlay
-                .border(0.dp, Color.Transparent) // Hack to match border logic
-                .padding(horizontal = 16.dp, vertical = 12.dp)
+                .border(0.w, Color.Transparent) // Hack to match border logic
+                .padding(horizontal = 16.w, vertical = 12.w)
         ) {
-            Text(title.uppercase(), fontSize = 12.sp, fontWeight = FontWeight.Bold, color = Stone600, letterSpacing = 1.sp)
+            Text(title.uppercase(), fontSize = 12.f, fontWeight = FontWeight.Bold, color = Stone600, letterSpacing = 1.sp)
         }
-        Divider(color = Color(0xFFD6D3D1), thickness = 1.dp)
+        Divider(color = Color(0xFFD6D3D1), thickness = 1.w)
 
         content()
     }
@@ -185,20 +186,20 @@ fun SettingsItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(16.dp),
+            .padding(16.w),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(12.dp))
-        Text(label, fontSize = 14.sp, color = contentColor, modifier = Modifier.weight(1f))
+        Icon(imageVector = icon, contentDescription = null, tint = iconColor, modifier = Modifier.size(20.w))
+        Spacer(modifier = Modifier.width(12.w))
+        Text(label, fontSize = 14.f, color = contentColor, modifier = Modifier.weight(1f))
 
         if (trailingContent != null) {
             trailingContent()
         } else if (showChevron) {
-            Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = Stone500, modifier = Modifier.size(16.dp))
+            Icon(Icons.Filled.ChevronRight, contentDescription = null, tint = Stone500, modifier = Modifier.size(16.w))
         }
     }
     if (showDivider) {
-        Divider(color = Color(0xFFD6D3D1), thickness = 1.dp)
+        Divider(color = Color(0xFFD6D3D1), thickness = 1.w)
     }
 }

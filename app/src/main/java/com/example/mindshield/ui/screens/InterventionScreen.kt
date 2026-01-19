@@ -43,11 +43,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.ui.theme.CardBeige
 import com.example.mindshield.ui.theme.Emerald600
@@ -57,6 +57,8 @@ import com.example.mindshield.ui.theme.Stone600
 import com.example.mindshield.ui.theme.Stone900
 import com.example.mindshield.ui.theme.WarmBeige
 import com.example.mindshield.ui.viewmodel.InterventionScreenViewModel
+import f
+import w
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +76,7 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
     val isDragged by interactionSource.collectIsDraggedAsState()
 
     val thumbSize by animateDpAsState(
-        targetValue = if (isPressed || isDragged) 32.dp else 24.dp,
+        targetValue = if (isPressed || isDragged) 32.w else 24.w,
         label = "ThumbSizeAnimation"
     )
     Column(
@@ -82,39 +84,41 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
             .fillMaxSize()
             .background(WarmBeige)
             .verticalScroll(rememberScrollState())
-            .padding(24.dp)
-            .padding(bottom = 80.dp)
+            .padding(24.w)
+            .padding(bottom = 80.w)
     ) {
         Text(
             text = "Intervention",
-            fontSize = 24.sp,
+            fontSize = 24.f,
             fontWeight = FontWeight.Bold,
             color = Stone900
         )
         Text(
             text = "Changeable Parameters on How Mindshield Can Protect You",
-            fontSize = 12.sp,
+            fontSize = 12.f,
             color = Stone600,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(bottom = 32.w)
         )
 
         // --- Trigger Sensitivity Section ---
         Row(
-            modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.w),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text("Trigger Sensitivity", fontWeight = FontWeight.Medium, color = Stone900)
+            Text("Trigger Sensitivity", fontWeight = FontWeight.Medium, color = Stone900, fontSize = 16.f, lineHeight = 24.f)
             ContainerLabel(text = "${sensitivity}%")
         }
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.w))
                 .background(CardBeige)
-                .border(1.dp, Color(0xFFD6D3D1), RoundedCornerShape(16.dp))
-                .padding(24.dp)
+                .border(1.w, Color(0xFFD6D3D1), RoundedCornerShape(16.w))
+                .padding(18.w)
         ) {
             Slider(
                 value = (sensitivity / 100f),
@@ -130,16 +134,16 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                     Box(
                         modifier = Modifier
                             .size(thumbSize)
-                            .shadow(elevation = 4.dp, shape = CircleShape)
+                            .shadow(elevation = 4.w, shape = CircleShape)
                             .background(color = Color.White, shape = CircleShape)
-                            .padding(3.dp)
+                            .padding(3.w)
                             .background(color = Emerald600, shape = CircleShape)
                     )
                 },
                 // Personal track setting
                 track = { sliderState ->
                     // 设定轨道的高度和圆角
-                    val trackHeight = 14.dp // adjust the thickness of the track
+                    val trackHeight = 14.w // adjust the thickness of the track
                     val trackShape = RoundedCornerShape(trackHeight / 2)
                     Box(
                         modifier = Modifier
@@ -161,11 +165,11 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("Dull", fontSize = 14.sp, color = Stone500)
-                Text("Sensitive", fontSize = 14.sp, color = Stone500)
+                Text("Dull", fontSize = 14.f, color = Stone500, lineHeight = 5.f)
+                Text("Sensitive", fontSize = 14.f, color = Stone500, lineHeight = 5.f)
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(32.w))
 
         // --- Visual Cooling Section ---
         SectionHeader(
@@ -189,7 +193,7 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                 showDivider = false
             )
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(32.w))
 
         // --- Haptic Feedback Section ---
         SectionHeader(
@@ -207,56 +211,63 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
             )
             if (hapticsEnabled == true) {
                 // Heartbeat Sync Sub-item
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(CardBeige) // Yellowish tint
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.Bolt,
-                                contentDescription = null,
-                                tint = Color(0xFFCA8A04),
-                                modifier = Modifier.size(14.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text(
-                                "Heartbeat Sync",
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.Medium,
-                                color = Stone900
-                            )
-                        }
-                        Text(
-                            "Vibrate 20% slower than current HR",
-                            fontSize = 12.sp,
-                            color = Stone500
-                        )
-                    }
-                    if (heartbeatSync != null){
-                        Switch(
-                            checked = heartbeatSync == true,
-                            onCheckedChange = { viewModel.setHeartbeatSync(it) },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = Color.White,
-                                checkedTrackColor = Emerald600,
-                                uncheckedThumbColor = Color.White,
-                                uncheckedTrackColor = Color(0xFFA8A29E)
-                            )
-                        )
-                    }
-                    else {
-                        //
-                    }
-
-                }
+                SwitchRow(
+                    title = "Heartbeat Sync",
+                    subtitle = "Vibrate 20% slower than current HR",
+                    checked = heartbeatSync,
+                    onCheckedChange = { viewModel.setHeartbeatSync(it) },
+                    showDivider = false // 如果开启，下面还有一行，显示分割线
+                )
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(CardBeige) // Yellowish tint
+//                        .padding(16.w),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.SpaceBetween
+//                ) {
+//                    Column(modifier = Modifier.weight(1f)) {
+//                        Row(verticalAlignment = Alignment.CenterVertically) {
+//                            Icon(
+//                                imageVector = Icons.Outlined.Bolt,
+//                                contentDescription = null,
+//                                tint = Color(0xFFCA8A04),
+//                                modifier = Modifier.size(14.w)
+//                            )
+//                            Spacer(modifier = Modifier.width(4.w))
+//                            Text(
+//                                "Heartbeat Sync",
+//                                fontSize = 14.f,
+//                                fontWeight = FontWeight.Medium,
+//                                color = Stone900
+//                            )
+//                        }
+//                        Text(
+//                            "Vibrate 20% slower than current HR",
+//                            fontSize = 12.f,
+//                            color = Stone500
+//                        )
+//                    }
+//                    if (heartbeatSync != null){
+//                        Switch(
+//                            checked = heartbeatSync == true,
+//                            onCheckedChange = { viewModel.setHeartbeatSync(it) },
+//                            colors = SwitchDefaults.colors(
+//                                checkedThumbColor = Color.White,
+//                                checkedTrackColor = Emerald600,
+//                                uncheckedThumbColor = Color.White,
+//                                uncheckedTrackColor = Color(0xFFA8A29E)
+//                            )
+//                        )
+//                    }
+//                    else {
+//                        //
+//                    }
+//
+//                }
             }
         }
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(32.w))
 
         // --- Cognitive Section ---
         SectionHeader(
@@ -276,25 +287,25 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
 
         // --- Demo Info Box ---
         if (edgeGlow == true) {
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.w))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xF0EFF6FF), RoundedCornerShape(12.dp)) // Blue 50
-                    .border(1.dp, Color(0xFFBFDBFE), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
+                    .background(Color(0xF0EFF6FF), RoundedCornerShape(12.w)) // Blue 50
+                    .border(1.w, Color(0xFFBFDBFE), RoundedCornerShape(12.w))
+                    .padding(16.w),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.Filled.Info,
                     contentDescription = null,
                     tint = Color(0xFF2563EB),
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(20.w)
                 )
-                Spacer(modifier = Modifier.width(12.dp))
+                Spacer(modifier = Modifier.width(12.w))
                 Text(
                     "The \"Edge Glow\" effect is active. You will see a breathing blue border on your screen when stress is detected.",
-                    fontSize = 12.sp,
+                    fontSize = 12.f,
                     color = Color(0xFF1E40AF),
                     lineHeight = 16.sp
                 )
@@ -308,10 +319,10 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
     fun ContainerLabel(text: String) {
         Box(
             modifier = Modifier
-                .background(Color(0x1A059669), RoundedCornerShape(4.dp))
-                .padding(horizontal = 8.dp, vertical = 4.dp)
+                .background(Color(0x1A059669), RoundedCornerShape(4.w))
+                .padding(horizontal = 8.w, vertical = 4.w)
         ) {
-            Text(text, fontSize = 12.sp, color = Emerald800, fontWeight = FontWeight.Bold)
+            Text(text, fontSize = 12.f, color = Emerald800, fontWeight = FontWeight.Bold)
         }
     }
 
@@ -320,16 +331,16 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
     fun SectionHeader(icon: ImageVector, title: String, color: Color) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 12.w)
         ) {
             Icon(
                 imageVector = icon,
                 contentDescription = null,
                 tint = color,
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.w)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(title, fontWeight = FontWeight.Medium, color = Stone900)
+            Spacer(modifier = Modifier.width(8.w))
+            Text(title, fontWeight = FontWeight.Medium, color = Stone900, fontSize = 16.f)
         }
     }
 
@@ -339,9 +350,9 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.w))
                 .background(CardBeige)
-                .border(1.dp, Color(0xFFD6D3D1), RoundedCornerShape(16.dp))
+                .border(1.w, Color(0xFFD6D3D1), RoundedCornerShape(16.w))
         ) {
             content()
         }
@@ -359,13 +370,13 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(16.dp),
+                .padding(16.w),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(title, fontSize = 14.sp, fontWeight = FontWeight.Medium, color = Stone900)
-                Text(subtitle, fontSize = 12.sp, color = Stone500)
+                Text(title, fontSize = 14.f, fontWeight = FontWeight.Medium, color = Stone900, lineHeight = 24.f)
+                Text(subtitle, fontSize = 12.f, color = Stone500, lineHeight = 22.f)
             }
             if (checked != null) {
                 Switch(
@@ -376,7 +387,8 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                         checkedTrackColor = Emerald600,
                         uncheckedThumbColor = Color.White,
                         uncheckedTrackColor = Color(0xFFA8A29E) // stone-400
-                    )
+                    ),
+                    modifier = Modifier.scale(0.80f).height(32.w).width(52.w)
                 )
             }
             else {
@@ -385,6 +397,6 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
 
         }
         if (showDivider == true) {
-            Divider(color = Color(0xFFD6D3D1), thickness = 1.dp)
+            Divider(color = Color(0xFFD6D3D1), thickness = 1.w)
         }
     }
