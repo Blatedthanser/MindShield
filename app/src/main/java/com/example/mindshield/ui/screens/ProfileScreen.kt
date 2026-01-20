@@ -32,6 +32,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.mindshield.service.AccessibilityState
+import com.example.mindshield.ui.intervention.InterventionManager
 import f
 import w
 
@@ -125,7 +126,30 @@ fun ProfileScreen(
                     }
                 }
             )
-
+            SettingsItem(
+                icon = Icons.Outlined.Delete,
+                label = "EdgeGlow Test",
+                onClick = { InterventionManager.triggerGlow(context, repeatCount = 5, speed = 2000, breath = 6000) },
+                showChevron = false,
+                isDestructive = false,
+                showDivider = true
+            )
+            SettingsItem(
+                icon = Icons.Outlined.Delete,
+                label = "Desaturation Test",
+                onClick = { InterventionManager.triggerDesaturation(context, durationMillis = 60_000) },
+                showChevron = false,
+                isDestructive = false,
+                showDivider = true
+            )
+            SettingsItem(
+                icon = Icons.Outlined.Delete,
+                label = "Floating Bubble Test",
+                onClick = { InterventionManager.triggerBubble(context) },
+                showChevron = false,
+                isDestructive = false,
+                showDivider = false
+            )
         }
 
         // --- Footer ---
