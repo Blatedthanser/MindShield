@@ -221,7 +221,7 @@ fun InsightScreen() {
 
             // --- 4. Timeline Events ---
             if (realEvents.isEmpty()) {
-                item { Text("No timeline events yet.", color = Stone500) }
+                item { Text("No timeline events yet.", color = Stone500, fontSize = 18.f) }
             }
 
             items(realEvents) { event ->
@@ -259,7 +259,8 @@ fun InsightScreen() {
                                     Text(
                                         text = "${event.appName} • ${event.heartRate} BPM",
                                         fontWeight = FontWeight.Medium,
-                                        color = Stone900
+                                        color = Stone900,
+                                        fontSize = 16.f
                                     )
                                 }
                                 Icon(

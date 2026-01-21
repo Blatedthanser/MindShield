@@ -102,7 +102,7 @@ class MindShieldService : Service() {
                     if (smoothedState != MentalState.NULL) {
 
                         // Logic A: Trigger Intervention (Distress)
-                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 60_000 * 0.05) && triggerCount < 2) {  // 5 minutes
+                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 60_000 * 0.05) && triggerCount < 1) {  // 5 minutes
                             println("CORE SERVICE: Distress detected. Starting classification...")
                             triggerCount ++
                             startTextClassification()

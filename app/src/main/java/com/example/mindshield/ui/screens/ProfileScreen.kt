@@ -1,6 +1,7 @@
 package com.example.mindshield.ui.screens
 
 import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -27,11 +28,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.example.mindshield.ui.theme.*
 import android.provider.Settings
+import androidx.compose.material.icons.outlined.PictureInPictureAlt
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import com.example.mindshield.service.AccessibilityState
+import com.example.mindshield.service.AlertWindowState
 import com.example.mindshield.ui.intervention.InterventionManager
 import f
 import w
@@ -42,9 +45,14 @@ fun ProfileScreen(
 ) {
     val context = LocalContext.current
 
-    val isServiceEnabled by remember(context) {
+    val isAccessibilityServiceEnabled by remember(context) {
         AccessibilityState.getEnabledFlow(context)
     }.collectAsState(initial = false)
+
+    val isAlertWindowEnabled by remember(context) {
+        AlertWindowState.getEnabledFlow(context)
+    }.collectAsState(initial = false)
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -119,10 +127,31 @@ fun ProfileScreen(
                 trailingContent = {
                     Box(
                         modifier = Modifier
-                            .background(Color(if (isServiceEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.w))
+                            .background(Color(if (isAccessibilityServiceEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.w))
                             .padding(horizontal = 6.w, vertical = 2.w)
                     ) {
-                        Text(if (isServiceEnabled) "Active" else "Inactive", fontSize = 11.f, color = if (isServiceEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
+                        Text(if (isAccessibilityServiceEnabled) "Active" else "Inactive", fontSize = 11.f, color = if (isAccessibilityServiceEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
+                    }
+                }
+            )
+            SettingsItem(
+                icon = Icons.Outlined.PictureInPictureAlt,
+                label = "Alert Window",
+                onClick = {
+                    val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
+                        data = Uri.parse("package:${context.packageName}")
+                    }
+                    context.startActivity(intent)
+                },
+                showChevron = false,
+                showDivider = true,
+                trailingContent = {
+                    Box(
+                        modifier = Modifier
+                            .background(Color(if (isAlertWindowEnabled) 0x33059669 else 0x339E9E9E), RoundedCornerShape(4.w))
+                            .padding(horizontal = 6.w, vertical = 2.w)
+                    ) {
+                        Text(if (isAlertWindowEnabled) "Active" else "Inactive", fontSize = 11.f, color = if (isAlertWindowEnabled) Emerald800 else Stone500, fontWeight = FontWeight.Bold)
                     }
                 }
             )
