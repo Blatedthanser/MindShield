@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
 import com.example.mindshield.domain.analysis.MultilingualTextClassifier
+import android.content.pm.PackageManager
 
 class MindShieldAccessibilityService : AccessibilityService() {
 
@@ -43,14 +44,33 @@ class MindShieldAccessibilityService : AccessibilityService() {
 
     fun startTextDiagnosis() {
         val rootNode = rootInActiveWindow ?: return
+        // 1. 获取 App 名称
+        val packageName = rootNode.packageName?.toString() ?: "Unknown"
+        val appName = getAppNameFromPackage(packageName)
         val allTexts = collectAllTexts(rootNode)
         val mergedText = buildMergedText(allTexts)
-        println("==================读取文字=================")
-        println(mergedText)
+        // 2. 截取一小段文字用于显示
+        val snippet = mergedText.take(60).replace("\n", " ")
         val result = classifier.analyze(mergedText)
-        println("==================分析结果=================")
-        println(result)
-        MindShieldService.judgeOnResponse(result)
+        // 3. 传入 appName 和 snippet
+        MindShieldService.judgeOnResponse(result, appName, snippet)
+    }
+
+    private fun getAppNameFromPackage(packageName: String): String {
+        return try {
+            val pm = applicationContext.packageManager
+            val info = pm.getApplicationInfo(packageName, 0)
+            pm.getApplicationLabel(info).toString()
+        } catch (e: Exception) {
+            // 如果获取失败，做个简单映射
+            when {
+                packageName.contains("twitter") -> "X (Twitter)"
+                packageName.contains("weibo") -> "Weibo"
+                packageName.contains("tiktok") -> "TikTok"
+                packageName.contains("xingin") -> "Rednote"
+                else -> "Unknown App"
+            }
+        }
     }
 
     private fun collectAllTexts(node: AccessibilityNodeInfo?): List<String> {

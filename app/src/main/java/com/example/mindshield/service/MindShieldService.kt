@@ -32,6 +32,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import com.example.mindshield.model.InterventionEvent
+import com.example.mindshield.data.repository.InterventionRepository
 
 class MindShieldService : Service() {
 
@@ -46,18 +48,22 @@ class MindShieldService : Service() {
 
     private lateinit var onboardingManager: OnboardingManager
 
+    private var currentHeartRate: Int = 0
+
     companion object{
         const val ACTION_RESPONSE = "analyzer.ACTION_RESPONSE"
         private var instance: MindShieldService? = null
 
         // 供外部调用的公开方法
-        fun judgeOnResponse(result: String) {
-            instance?.judgeOnResponse(result) ?: Log.e("MindShield", "服务未开启，无法启动任务")
+        fun judgeOnResponse(result: String, appName: String, snippet: String) {
+            instance?.judgeOnResponse(result, appName, snippet)
+                ?: Log.e("MindShield", "服务未开启")
         }
     }
 
     override fun onCreate() {
         super.onCreate()
+        InterventionRepository.init(applicationContext)     //初始化数据库
         createNotificationChannel()
         instance = this
         Log.d("MindShield", "服务已连接，实例已注册")
@@ -85,7 +91,7 @@ class MindShieldService : Service() {
                     delay(1000)
                     continue  // restart loop check
                 }
-                wearableSource.observeData().collect { data ->
+                wearableSource.observeData().collect { data -> currentHeartRate = data.hr
                     val now = System.currentTimeMillis()
 
                     val smoothedState = analyzer.process(data) //Pass data to SlidingWindow
@@ -136,12 +142,26 @@ class MindShieldService : Service() {
         return START_STICKY
     }
 
-    private fun judgeOnResponse(result: String) {
+    private fun judgeOnResponse(result: String, appName: String, snippet: String) {
         if (result == "非常负面 (Very Negative)") {
             Log.d("TAG","强干预")
         }
         else if (result == "负面 (Negative)") {
             Log.d("TAG","弱干预")
+        }
+        if (result.contains("负面") || result.contains("Negative")) {
+            val event = InterventionEvent(
+                timestamp = System.currentTimeMillis(),
+                appName = appName,
+                heartRate = currentHeartRate, // 使用实时记录的心率
+                ocrSnippet = snippet,
+                result = result
+            )
+
+            serviceScope.launch {
+                InterventionRepository.addEvent(event)
+                Log.d("MindShield", "数据已保存: $appName - ${currentHeartRate}bpm")
+            }
         }
     }
     private fun startTextClassification() {
