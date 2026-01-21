@@ -23,6 +23,7 @@ import com.example.mindshield.domain.analysis.MentalState
 import com.example.mindshield.domain.analysis.PhysiologicalAnalyzer
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
 import com.example.mindshield.domain.calibration.UserBaseline
+import com.example.mindshield.ui.intervention.InterventionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
