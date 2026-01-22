@@ -49,11 +49,15 @@ class MindShieldAccessibilityService : AccessibilityService() {
         val appName = getAppNameFromPackage(packageName)
         val allTexts = collectAllTexts(rootNode)
         val mergedText = buildMergedText(allTexts)
-        // 2. 截取一小段文字用于显示
-        val snippet = mergedText.take(60).replace("\n", " ")
-        val result = classifier.analyze(mergedText)
-        // 3. 传入 appName 和 snippet
-        MindShieldService.judgeOnResponse(result, appName, snippet)
+        val analysisResult = classifier.analyze(mergedText)
+        // 截取一小段文字用于显示
+        val snippet = analysisResult.triggerText
+        val resultLabel = analysisResult.label
+        println("==================分析结果=================")
+        println("Label: $resultLabel")
+        println("Trigger Text: $snippet")
+        // 传入 appName 和 具体的 snippet
+        MindShieldService.judgeOnResponse(resultLabel, appName, snippet)
     }
 
     private fun getAppNameFromPackage(packageName: String): String {

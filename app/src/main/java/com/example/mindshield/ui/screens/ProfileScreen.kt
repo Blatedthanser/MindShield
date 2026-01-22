@@ -36,6 +36,30 @@ import androidx.compose.ui.platform.LocalContext
 import com.example.mindshield.service.AccessibilityState
 import com.example.mindshield.service.AlertWindowState
 import com.example.mindshield.ui.intervention.InterventionManager
+import androidx.compose.runtime.rememberCoroutineScope
+import com.example.mindshield.data.repository.InterventionRepository
+import kotlinx.coroutines.launch
+import android.widget.Toast
+import androidx.compose.material.icons.outlined.AddAlert
+import androidx.compose.material.icons.outlined.AddToHomeScreen
+import androidx.compose.material.icons.outlined.ChatBubble
+import androidx.compose.material.icons.outlined.Contrast
+import androidx.compose.material.icons.outlined.Deblur
+import androidx.compose.material.icons.outlined.DeveloperBoard
+import androidx.compose.material.icons.outlined.DeveloperMode
+import androidx.compose.material.icons.outlined.ExitToApp
+import androidx.compose.material.icons.outlined.FeaturedPlayList
+import androidx.compose.material.icons.outlined.FilterBAndW
+import androidx.compose.material.icons.outlined.FormatColorFill
+import androidx.compose.material.icons.outlined.Gradient
+import androidx.compose.material.icons.outlined.LensBlur
+import androidx.compose.material.icons.outlined.Quickreply
+import androidx.compose.material.icons.outlined.RadioButtonUnchecked
+import androidx.compose.material.icons.outlined.ScreenRotation
+import androidx.compose.material.icons.outlined.ScreenRotationAlt
+import androidx.compose.material.icons.outlined.SelectAll
+import androidx.compose.material.icons.outlined.Sms
+import androidx.compose.material.icons.outlined.WidthFull
 import f
 import w
 
@@ -44,6 +68,8 @@ fun ProfileScreen(
     onCalibrationClick: () -> Unit
 ) {
     val context = LocalContext.current
+
+    val scope = rememberCoroutineScope()
 
     val isAccessibilityServiceEnabled by remember(context) {
         AccessibilityState.getEnabledFlow(context)
@@ -104,9 +130,16 @@ fun ProfileScreen(
             SettingsItem(
                 icon = Icons.Outlined.Delete,
                 label = "Clear All Historical Data",
-                onClick = {},
+                onClick = {
+                    // 在协程中调用 repository 的清除方法
+                    scope.launch {
+                        InterventionRepository.clearAllData()
+                        // 告诉用户操作成功了
+                        Toast.makeText(context, "All history cleared.", Toast.LENGTH_SHORT).show()
+                    }
+                },
                 showChevron = false,
-                isDestructive = true,
+                isDestructive = true, // 让文字变红
                 showDivider = false
             )
         }
@@ -135,7 +168,7 @@ fun ProfileScreen(
                 }
             )
             SettingsItem(
-                icon = Icons.Outlined.PictureInPictureAlt,
+                icon = Icons.Outlined.FeaturedPlayList,
                 label = "Alert Window",
                 onClick = {
                     val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION).apply {
@@ -156,7 +189,7 @@ fun ProfileScreen(
                 }
             )
             SettingsItem(
-                icon = Icons.Outlined.Delete,
+                icon = Icons.Outlined.ExitToApp,
                 label = "EdgeGlow Test",
                 onClick = { InterventionManager.triggerGlow(context, repeatCount = 5, speed = 2000, breath = 6000) },
                 showChevron = false,
@@ -164,7 +197,7 @@ fun ProfileScreen(
                 showDivider = true
             )
             SettingsItem(
-                icon = Icons.Outlined.Delete,
+                icon = Icons.Outlined.ExitToApp,
                 label = "Desaturation Test",
                 onClick = { InterventionManager.triggerDesaturation(context, durationMillis = 60_000) },
                 showChevron = false,
@@ -172,7 +205,7 @@ fun ProfileScreen(
                 showDivider = true
             )
             SettingsItem(
-                icon = Icons.Outlined.Delete,
+                icon = Icons.Outlined.ExitToApp,
                 label = "Floating Bubble Test",
                 onClick = { InterventionManager.triggerBubble(context) },
                 showChevron = false,

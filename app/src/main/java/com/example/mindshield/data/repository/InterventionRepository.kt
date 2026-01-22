@@ -30,6 +30,10 @@ object InterventionRepository {
         database?.interventionDao()?.insertEvent(event)
     }
 
+    suspend fun clearAllData() {
+        database?.interventionDao()?.deleteAllEvents()
+    }
+
     fun getHourlyStressData(eventsList: List<InterventionEvent>): List<ChartData> {
         val distribution = IntArray(24) { 0 }
         val calendar = Calendar.getInstance()

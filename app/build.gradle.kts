@@ -57,7 +57,7 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-    implementation("androidx.compose.material:material-icons-extended:1.6.0")
+    implementation("androidx.compose.material:material-icons-extended:1.7.2")
     implementation("com.google.mediapipe:tasks-text:latest.release")
     implementation("com.microsoft.onnxruntime:onnxruntime-android:1.17.0")
     implementation("androidx.datastore:datastore-preferences:1.0.0")
