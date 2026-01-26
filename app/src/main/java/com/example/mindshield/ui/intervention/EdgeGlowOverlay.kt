@@ -26,7 +26,7 @@ val ElectricCyan = Color(0xFF66CCFF)
 val PureWhite = Color(0xFFFFFFFF)  // 纯白高光
 
 @Composable
-fun CalmGlowOverlay(
+fun EdgeGlowOverlay(
     repeatCount: Int,
     rotationDuration: Int, // 控制流速 (毫秒)，即颜色流动一圈耗时
     breathDuration: Int,  // 单次呼吸总时间，即明暗变化耗时

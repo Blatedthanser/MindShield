@@ -1,6 +1,7 @@
 package com.example.mindshield.service
 
 import android.accessibilityservice.AccessibilityService
+import android.content.Intent
 import android.util.Log
 import android.view.accessibility.AccessibilityEvent
 import android.view.accessibility.AccessibilityNodeInfo
@@ -16,7 +17,6 @@ class MindShieldAccessibilityService : AccessibilityService() {
 
         private var instance: MindShieldAccessibilityService? = null
 
-        // 供外部调用的公开方法
         fun startDiagnosisFromActivity() {
             instance?.startTextDiagnosis() ?: Log.e("MindShield", "服务未开启，无法启动任务")
         }
@@ -28,7 +28,7 @@ class MindShieldAccessibilityService : AccessibilityService() {
         classifier = MultilingualTextClassifier(applicationContext)
 
         instance = this
-        Log.d("MindShield", "服务已连接，实例已注册")
+        Log.d("MindShield", "Accessibility instance has been bound to: $this")
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
@@ -127,6 +127,10 @@ class MindShieldAccessibilityService : AccessibilityService() {
         return sb.toString()
     }
 
+    override fun onUnbind(intent: Intent?): Boolean {
+        instance = null // 断开时置空
+        return super.onUnbind(intent)
+    }
 
     override fun onInterrupt() {
         Log.e(TAG, "服务被中断")

@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
-import com.example.mindshield.ui.intervention.CalmGlowOverlay
+import com.example.mindshield.ui.intervention.EdgeGlowOverlay
 import com.example.mindshield.ui.intervention.DesaturationOverlay
 import com.example.mindshield.ui.intervention.EmotionalBubbleOverlay
 import com.example.mindshield.ui.intervention.MyLifecycleOwner
@@ -48,7 +48,7 @@ class InterventionService : Service() {
                     val repeat = intent?.getIntExtra("REPEAT", 3) ?: 3
                     val speed = intent?.getIntExtra("SPEED", 4000) ?: 4000
                     val breath = intent?.getIntExtra("BREATH", 4000) ?: 4000
-                    CalmGlowOverlay(repeat, speed, breath) { stopSelf() }
+                    EdgeGlowOverlay(repeat, speed, breath) { stopSelf() }
                 }
                 TYPE_DESATURATION -> {
                     val duration = intent?.getIntExtra("DURATION", 5000) ?: 5000

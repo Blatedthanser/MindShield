@@ -4,10 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.Service
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
@@ -22,11 +19,9 @@ import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState
 import com.example.mindshield.domain.analysis.PhysiologicalAnalyzer
 import com.example.mindshield.domain.analysis.WindowedStateAnalyzer
-import com.example.mindshield.domain.calibration.UserBaseline
 import com.example.mindshield.ui.intervention.InterventionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -34,6 +29,8 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import com.example.mindshield.model.InterventionEvent
 import com.example.mindshield.data.repository.InterventionRepository
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
 
 class MindShieldService : Service() {
 
@@ -50,13 +47,20 @@ class MindShieldService : Service() {
 
     private var currentHeartRate: Int = 0
 
+    private var lastIntervention = System.currentTimeMillis()
+    private var interventionCount: Int = 0
+
+    private var shouldEdgeGlow: Boolean = true
+    private var shouldDesaturation: Boolean = true
+    private var shouldShowBubble: Boolean = true
+
     companion object{
         const val ACTION_RESPONSE = "analyzer.ACTION_RESPONSE"
         private var instance: MindShieldService? = null
 
         // 供外部调用的公开方法
         fun judgeOnResponse(result: String, appName: String, snippet: String) {
-            instance?.judgeOnResponse(result, appName, snippet)
+            instance?.judgeText(result, appName, snippet)
                 ?: Log.e("MindShield", "服务未开启")
         }
     }
@@ -83,7 +87,6 @@ class MindShieldService : Service() {
             var lastClassification = System.currentTimeMillis()
 
             onboardingManager = OnboardingManager(applicationContext)
-            var triggerCount: Int = 0
 
             while (true) {
                 if (!WearableSimulator.isConnected || !onboardingManager.isOnboardingCompleted.first()) {
@@ -102,14 +105,13 @@ class MindShieldService : Service() {
                     if (smoothedState != MentalState.NULL) {
 
                         // Logic A: Trigger Intervention (Distress)
-                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 60_000 * 0.05) && triggerCount < 1) {  // 5 minutes
+                        if (smoothedState == MentalState.DISTRESS && (now - lastClassification >= 60_000 * 1.1) && interventionCount < 3) {  // should at least greater than 1 minute
                             println("CORE SERVICE: Distress detected. Starting classification...")
-                            triggerCount ++
                             startTextClassification()
                             lastClassification = now
                         }
-                        else if (now - lastClassification >= 60_000 * 0.2 && smoothedState != MentalState.DISTRESS){
-                            triggerCount = 0
+                        else if (now - lastClassification >= 60_000 * 0.5 && smoothedState != MentalState.DISTRESS){ //30 secs cold down
+                            interventionCount = 0
                         }
                         // Logic B: Update UI (Throttled to 5 seconds)
                         if (now - lastUpdate >= 5_000) {
@@ -130,6 +132,18 @@ class MindShieldService : Service() {
                 }
             }
         }
+        //collect settings
+        serviceScope.launch {
+            combine(
+                settings.screenEdgeGlow,
+                settings.colorDesaturation,
+                settings.floatingBubble
+            ){ edgeglow, desaturation, bubble ->
+                shouldEdgeGlow = edgeglow
+                shouldDesaturation = desaturation
+                shouldShowBubble = bubble
+            }.collect()
+        }
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -142,13 +156,37 @@ class MindShieldService : Service() {
         return START_STICKY
     }
 
-    private fun judgeOnResponse(result: String, appName: String, snippet: String) {
+
+
+    private fun judgeText(result: String, appName: String, snippet: String) {
+        val now = System.currentTimeMillis()
         if (result == "非常负面 (Very Negative)") {
+            interventionCount ++
             Log.d("TAG","强干预")
+            if (interventionCount == 1 && shouldEdgeGlow) { //First time
+                InterventionManager.triggerGlow(this, repeatCount = 5, speed = 2000, breath = 6_000)
+                Log.d("TAG","EdgeGlow in effect")
+            }
+            else if (now - lastIntervention >= 60_000 && interventionCount == 2 && shouldDesaturation) { //ensure that it won't interrupt other interventions
+                InterventionManager.triggerDesaturation(this, durationMillis = 60_000)
+                Log.d("TAG","Desaturation in effect")
+            }
+            else if (now - lastIntervention >= 60_000 && interventionCount == 3 && shouldDesaturation) {
+                InterventionManager.triggerDesaturation(this, durationMillis = 60_000)
+                Log.d("TAG","Desaturation in effect")
+            }
+            lastIntervention = now
         }
         else if (result == "负面 (Negative)") {
+            interventionCount ++
             Log.d("TAG","弱干预")
+            if (now - lastIntervention >= 60_000 && shouldShowBubble){ //ensure that it won't interrupt other interventions
+                InterventionManager.triggerBubble(this, durationMillis = 6_000)
+                Log.d("TAG","FloatingBubble in effect")
+            }
+            lastIntervention = System.currentTimeMillis()
         }
+
         if (result.contains("负面") || result.contains("Negative")) {
             val event = InterventionEvent(
                 timestamp = System.currentTimeMillis(),
