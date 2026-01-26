@@ -81,16 +81,14 @@ class InterventionService : Service() {
         setupUniversalWindow()
     }
 
-    // 只需要这一套窗口配置，通用于所有干预 UI
+    // 窗口配置，通用于所有干预 UI
     private fun setupUniversalWindow() {
         val metrics = android.util.DisplayMetrics()
         windowManager.defaultDisplay.getRealMetrics(metrics)
-        // 暴力覆盖底部栏
-        val extraHeight = 300
 
         val params = WindowManager.LayoutParams().apply {
             width = metrics.widthPixels
-            height = metrics.heightPixels + extraHeight
+            height = metrics.heightPixels
 
             type = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
@@ -106,7 +104,7 @@ class InterventionService : Service() {
                     WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED
 
             format = PixelFormat.TRANSLUCENT
-            gravity = Gravity.CENTER
+            gravity = Gravity.TOP
         }
 
         composeView = ComposeView(this).apply {

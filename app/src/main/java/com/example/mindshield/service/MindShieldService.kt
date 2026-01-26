@@ -108,7 +108,7 @@ class MindShieldService : Service() {
                             startTextClassification()
                             lastClassification = now
                         }
-                        else if (now - lastClassification >= 60_000 * 0.2){
+                        else if (now - lastClassification >= 60_000 * 0.2 && smoothedState != MentalState.DISTRESS){
                             triggerCount = 0
                         }
                         // Logic B: Update UI (Throttled to 5 seconds)
