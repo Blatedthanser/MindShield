@@ -101,7 +101,7 @@ fun InsightScreen() {
                         }
                         Spacer(Modifier.height(16.w))
 
-                        if (stressData.all { it.value == 0 }) {
+                        if (stressData.all { it.count == 0 }) {
                             Box(Modifier.fillMaxWidth().height(180.w), contentAlignment = Alignment.Center) {
                                 Text("No Data Yet", color = Stone500, fontSize = 14.f)
                             }
@@ -111,13 +111,12 @@ fun InsightScreen() {
                                 verticalAlignment = Alignment.Bottom,
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
-                                // 这样不用每渲染一个柱子都重新遍历一遍 list 找最大值
-                                val hourlyMax = remember(stressData) { stressData.maxOfOrNull { it.value } ?: 0 }
+                                val hourlyMax = remember(stressData) { stressData.maxOfOrNull { it.count } ?: 0 }
                                 val safeMax = if (hourlyMax == 0) 1 else hourlyMax
 
                                 stressData.forEach { data ->
                                     // 计算高度
-                                    val rawHeightValue = (data.value.toFloat() / safeMax * 120)
+                                    val rawHeightValue = (data.count.toFloat() / safeMax * 120)
                                     val finalBarHeight = if (rawHeightValue < 4f) 4.w else rawHeightValue.toDouble().w
 
                                     Column(
@@ -129,7 +128,7 @@ fun InsightScreen() {
                                                 .width(24.w)
                                                 .height(finalBarHeight)
                                                 .background(
-                                                    if (data.value == hourlyMax && data.value > 0) Orange600 else Color(0xFFA8A29E),
+                                                    if (data.count == hourlyMax && data.count > 0) Orange600 else Color(0xFFA8A29E),
                                                     RoundedCornerShape(4.w, 4.w, 0.w, 0.w)
                                                 )
                                         )
@@ -165,7 +164,7 @@ fun InsightScreen() {
                                 appRankingData.forEachIndexed { index, item ->
                                     Row(verticalAlignment = Alignment.CenterVertically) {
                                         Text(
-                                            text = "0${index + 1}",
+                                            text = (index + 1).toString().padStart(2, '0'),
                                             fontSize = 12.f,
                                             fontFamily = FontFamily.Monospace,
                                             color = Stone500,
@@ -178,7 +177,7 @@ fun InsightScreen() {
                                                 horizontalArrangement = Arrangement.SpaceBetween
                                             ) {
                                                 Text(item.name, fontSize = 12.f, color = Stone900)
-                                                Text("${item.value}%", fontSize = 12.f, color = Stone500)
+                                                Text("${item.count}", fontSize = 12.f, color = Stone500)
                                             }
 
                                             Box(
@@ -190,7 +189,7 @@ fun InsightScreen() {
                                             ) {
                                                 Box(
                                                     modifier = Modifier
-                                                        .fillMaxWidth(item.value / 100f)
+                                                        .fillMaxWidth(item.percentage / 100f)
                                                         .height(6.w)
                                                         .background(
                                                             color = Orange600.copy(alpha = 1f - (index * 0.2f)),
@@ -226,7 +225,6 @@ fun InsightScreen() {
 
             items(realEvents) { event ->
                 val isExpanded = expandedEventId == event.id
-                // 【优化】SimpleDateFormat 放在 remember 里很棒，保持原样
                 val timeStr = remember(event.timestamp) {
                     SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date(event.timestamp))
                 }

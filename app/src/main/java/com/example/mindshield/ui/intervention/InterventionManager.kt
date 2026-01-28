@@ -4,6 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import com.example.mindshield.service.AlertWindowState
 import com.example.mindshield.service.InterventionService
 
 /**
@@ -53,7 +57,7 @@ object InterventionManager {
 
     // 私有统一启动方法，减少重复代码
     private fun startIntervention(context: Context, intentBlock: Intent.() -> Unit) {
-        if (!canDrawOverlays(context)) return // 或者抛出回调提示无权限
+        if (!canDrawOverlays(context)) return // 可以优化成无权限提示
 
         val intent = Intent(context, InterventionService::class.java).apply(intentBlock)
 
@@ -64,9 +68,12 @@ object InterventionManager {
         }
     }
 
-    private fun canDrawOverlays(context: Context): Boolean {
-        // ... (保持之前的权限检查逻辑) ...
-        return true // 简化示意
+    fun canDrawOverlays(context: Context): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Settings.canDrawOverlays(context)
+        } else {
+            true
+        }
     }
 }
 

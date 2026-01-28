@@ -13,7 +13,6 @@ import java.util.ArrayList
 import java.util.HashMap
 import kotlin.math.roundToInt
 
-// 数据类保持不变
 data class AnalysisResult(
     val label: String,
     val triggerText: String // 触发该结果的具体文字片段
@@ -125,9 +124,8 @@ class MultilingualTextClassifier(private val context: Context) {
         return true
     }
 
-    // ================== 修改重点在 analyze 函数 ==================
     fun analyze(Rawtext: String): AnalysisResult {
-        // 返回 AnalysisResult 而不是 String
+
         if (session == null || vocab.isEmpty()) {
             return AnalysisResult("Error", "模型未加载")
         }
@@ -136,8 +134,6 @@ class MultilingualTextClassifier(private val context: Context) {
         println("==============Cleaned Text==============\n $text \n\n\n")
 
         try {
-            // 这里不需要调用 tokenize 了，因为后面 predictSingleWindow 会调
-            // val tokenIds = tokenize(text)
 
             var sentences = text.split(Regex("[!?;。\n！？；]"))
             sentences = sentences.filter{ it.length > 2 && !it.matches(Regex("^[0-9]+$")) }
@@ -163,7 +159,7 @@ class MultilingualTextClassifier(private val context: Context) {
                 // 如果发现了更负面的情绪，更新 minIndex 并保存这段文字
                 if (index < minIndex) {
                     minIndex = index
-                    worstWindowText = windowText // <--- 关键修改：保存罪魁祸首
+                    worstWindowText = windowText
                 }
 
                 if (index == 0) println("Very Negative: $windowText")
@@ -180,7 +176,6 @@ class MultilingualTextClassifier(private val context: Context) {
             }
 
             // Case 2: 非常负面
-            // 返回 worstWindowText
             if (minIndex == 0) {
                 return AnalysisResult(labels[0], worstWindowText)
             }
@@ -211,7 +206,6 @@ class MultilingualTextClassifier(private val context: Context) {
         }
     }
 
-    // 后面的辅助函数保持原样
     private fun predictSingleWindow(text: String): Int {
         try {
             val tokenIds = tokenize(text)
@@ -281,19 +275,21 @@ class MultilingualTextClassifier(private val context: Context) {
 
     private fun cleanSocialMediaText(rawText: String): String {
         var text = rawText
+        //手动去除部分无意义词语
         val uiKeywords = listOf("Reply", "Translate", "Follow", "ago", "mins", "hr", "hrs", "Save", "Say something",
             "回复","说点什么...","momo"
         )
         for (kw in uiKeywords) {
             text = text.replace(Regex("(?i)\\b$kw\\b"), "")
         }
-        text = text.replace("Reply", "")
-        text = text.replace("Translate", "")
+
+        //去除时间文本
         text = text.replace(Regex("\\d{1,2}:\\d{2}"), "")
         text = text.replace(Regex("\\d{1,2}月前"), "")
         text = text.replace(Regex("\\d{1,2}天前"), "")
         text = text.replace(Regex("\\d{1,2}小时前"), "")
         text = text.replace(Regex("\\d{1,2}分钟前"), "")
+
         text = text.replace(Regex("展开 \\d{1,4} 条回复"), "")
         text = text.replace("Author liked", "")
         text = text.replace(Regex("[A-Za-z ]+, China"), "")

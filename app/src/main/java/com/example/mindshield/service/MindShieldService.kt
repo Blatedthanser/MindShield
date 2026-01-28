@@ -35,7 +35,7 @@ import kotlinx.coroutines.flow.combine
 class MindShieldService : Service() {
 
 
-    // 1. Initialize the interface (In the future, swap 'WearableSimulator()' with 'RealSdkWrapper()')
+    // 1. Initialize the interface (In the future, swap 'WearableSimulator' with 'RealSdkWrapper')
     private val wearableSource: IWearableSource = WearableSimulator
 
     // Create a scope for background work
@@ -67,7 +67,7 @@ class MindShieldService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        InterventionRepository.init(applicationContext)     //初始化数据库
+        InterventionRepository.init(applicationContext) // Initialize the repository
         createNotificationChannel()
         instance = this
         Log.d("MindShield", "服务已连接，实例已注册")
@@ -251,7 +251,7 @@ class MindShieldService : Service() {
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("MindShield Protection Active")
             .setContentText("Monitoring physiological data...")
-            .setSmallIcon(android.R.drawable.ic_menu_myplaces) // Replace with your R.drawable.ic_shield
+            .setSmallIcon(android.R.drawable.ic_menu_myplaces)
             .setOngoing(true) // User cannot swipe it away easily
             .build()
     }

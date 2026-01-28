@@ -28,7 +28,7 @@ class BaselineStorage(context: Context) {
 
         prefs.edit()
             .putString(KEY_BASELINE, jsonString)
-            .apply() // use .commit() if you need it to be synchronous, usually .apply() is better
+            .apply()
     }
 
     // LOAD: Phone Storage -> JSON -> Data Class -> Update Singleton
@@ -53,9 +53,8 @@ class BaselineStorage(context: Context) {
         }
     }
 
-    // CLEAR: If you ever need to reset data
+    // CLEAR
     fun clearBaseline() {
         prefs.edit().remove(KEY_BASELINE).apply()
-        // Optionally reset UserBaseline variables to defaults manually here
     }
 }

@@ -32,19 +32,12 @@ class MindShieldAccessibilityService : AccessibilityService() {
     }
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
-//        val rootNode = rootInActiveWindow ?: return
-//        val allTexts = collectAllTexts(rootNode)
-//        val mergedText = buildMergedText(allTexts)
-//        println("==================读取文字=================")
-//        println(mergedText)
-//        val result = classifier.analyze(mergedText)
-//        println("==================分析结果=================")
-//        println(result)
+        // Nothing's here
     }
 
     fun startTextDiagnosis() {
         val rootNode = rootInActiveWindow ?: return
-        // 1. 获取 App 名称
+        // 获取 App 名称
         val packageName = rootNode.packageName?.toString() ?: "Unknown"
         val appName = getAppNameFromPackage(packageName)
         val allTexts = collectAllTexts(rootNode)

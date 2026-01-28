@@ -21,7 +21,7 @@ object AlertWindowState {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 Settings.canDrawOverlays(appContext)
             } else {
-                true // 低于 6.0 默认有权限，或者通过旧方式判断
+                true // 低于 6.0 默认有权限
             }
         }
 

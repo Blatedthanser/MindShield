@@ -31,7 +31,7 @@ class OnboardingScreenViewModel(application: Application) : AndroidViewModel(app
 
     private val _uiState = MutableStateFlow<UiState>(UiState.Idle)
     private val _countdown = MutableStateFlow<Int?>(null)
-    // 2. PUBLIC immutable state (Exposed to UI)
+    // PUBLIC immutable state (Exposed to UI)
     val uiState = _uiState.asStateFlow()
     val countdown: StateFlow<Int?> = _countdown
     val showFloatingBox: StateFlow<Boolean> =
@@ -69,7 +69,7 @@ class OnboardingScreenViewModel(application: Application) : AndroidViewModel(app
 
             val baseline = UserStatisticsTester.measureUserBaseline(WearableSimulator, durationTime)
 
-            // 3. Update state based on result
+            // Update state based on result
             baseline?.let {
                 if (it.isCalibrated.value) {
                     _uiState.value = UiState.Success

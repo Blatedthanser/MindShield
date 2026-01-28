@@ -78,9 +78,10 @@ object PhysiologicalAnalyzer {
                 (zSdnn * 0.5) +    // SDNN stays Neutral or goes UP (Mechanical noise)
                 (zRatio * 0.0)     // Ratio goes UP slightly
 
-        // 6. Sensitivity
+        // 5. Sensitivity
         val threshold: Double = (100 - _sensitivity) / 100.0 * 60.0   //Default = 50
-        // 5. THE VERDICT (Comparison)
+
+        // 6. THE VERDICT (Comparison)
 
         println("ANALYSIS: DistressScore=${"%.2f".format(distressVector)} | ExerciseScore=${"%.2f".format(exerciseVector)}")
 

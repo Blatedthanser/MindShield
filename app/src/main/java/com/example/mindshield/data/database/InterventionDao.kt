@@ -13,8 +13,8 @@ interface InterventionDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: InterventionEvent)
 
-    // 查询所有数据，按时间倒序排列 (最新的在最上面)
-    // 返回 Flow，这样数据库一更新，UI 就会自动收到通知
+    // 查询所有数据，按时间倒序排列
+    // 返回 Flow：UI随数据库自动更新
     @Query("SELECT * FROM intervention_events ORDER BY timestamp DESC")
     fun getAllEvents(): Flow<List<InterventionEvent>>
 

@@ -26,25 +26,23 @@ import kotlin.math.sin
 
 @Composable
 fun EmotionalBubbleOverlay(
-    durationMillis: Int = 15_000, // 稍微延长一点，因为出场变慢了
+    durationMillis: Int = 15_000,
     text: String = "检测到您情绪不稳，\n还好吗？",
     onFinished: () -> Unit
 ) {
-    // --- 1. 描边进度动画 (0 -> 1) ---
-    // 用来控制边框“画出来”的过程
+    // --- 描边进度动画 (0 -> 1) ---
     val borderProgress = remember { Animatable(0f) }
     val borderAlpha = remember { Animatable(0.5f) }
 
-    // --- 2. 内容透明度 ---
+    // --- 内容透明度 ---
     val textAlpha = remember { Animatable(0f) }
     val backgroundAlpha = remember { Animatable(0f) }
 
 
-    // --- 3. 雾气扰动动画 (更剧烈、更明显) ---
+    // --- 雾气扰动动画 (更剧烈、更明显) ---
     val infiniteTransition = rememberInfiniteTransition(label = "fog")
 
-    // 我们定义3个光斑，让它们做大幅度的圆周/椭圆运动
-    // 速度调快 (duration 变小)，范围调大
+    // 定义3个光斑，做大幅度运动
     val time by infiniteTransition.animateFloat(
         initialValue = 0f, targetValue = 2f * Math.PI.toFloat(),
         animationSpec = infiniteRepeatable(
@@ -56,13 +54,13 @@ fun EmotionalBubbleOverlay(
     val borderRotation by infiniteTransition.animateFloat(
         initialValue = 360f, targetValue = 0f,
         animationSpec = infiniteRepeatable(
-            animation = tween(6000, easing = LinearEasing), // 3秒转一圈
+            animation = tween(6000, easing = LinearEasing), // 6秒转一圈
             repeatMode = RepeatMode.Reverse
         ), label = "rotation"
     )
 
     LaunchedEffect(Unit) {
-        // A. 进场：优雅的描边 + 缓慢浮现
+        // 进场：描边 + 缓慢浮现
         // 边框画一圈耗时 5秒
         launch {
             borderProgress.animateTo(1f, tween(5000, easing = FastOutSlowInEasing))
@@ -81,11 +79,11 @@ fun EmotionalBubbleOverlay(
             backgroundAlpha.animateTo(0.75f, tween(2800, easing = LinearOutSlowInEasing))
         }
 
-        // B. 停留
+        // 停留
         val stayTime = if (durationMillis > 2500) durationMillis else 2000
         delay(stayTime.toLong())
 
-        // C. 离场：光线倒退消失 + 雾气消散
+        // 离场：光线倒退消失 + 雾气消散
         launch {
             borderProgress.animateTo(0f, tween(2000, easing = FastOutSlowInEasing))
         }
@@ -111,7 +109,7 @@ fun EmotionalBubbleOverlay(
             modifier = Modifier
                 .padding(top = 75.dp)
                 .widthIn(max = 300.dp)
-                .height(IntrinsicSize.Min) // 高度随内容自适应
+                .height(IntrinsicSize.Min)
         ) {
             // Layer 1: 动态雾气背景
             Canvas(modifier = Modifier.matchParentSize()) {
@@ -145,7 +143,7 @@ fun EmotionalBubbleOverlay(
                     val fogAlpha = backgroundAlpha.value  // 随进场动画变化
 
 
-                    // 1. 青蓝雾
+                    // 蓝
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(Color(0xFF4FC3F7).copy(alpha = 0.55f * fogAlpha), Color.Transparent),
@@ -156,7 +154,7 @@ fun EmotionalBubbleOverlay(
                         radius = w * 0.9f
                     )
 
-                    // 2. 梦幻紫雾
+                    // 紫
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(Color(0xFFE1BEE7).copy(alpha = 0.70f * fogAlpha), Color.Transparent),
@@ -167,7 +165,7 @@ fun EmotionalBubbleOverlay(
                         radius = w * 0.8f
                     )
 
-                    // 3. 提亮白雾 (增加透气感)
+                    // 白
                     drawCircle(
                         brush = Brush.radialGradient(
                             colors = listOf(Color.White.copy(alpha = 0.6f * fogAlpha), Color.Transparent),
@@ -180,7 +178,7 @@ fun EmotionalBubbleOverlay(
                 }
             }
 
-            // Layer 2: 灵动描边 (核心修改)
+            // Layer 2: 灵动描边
             Canvas(modifier = Modifier.matchParentSize()) {
                 val w = size.width
                 val h = size.height
@@ -207,7 +205,7 @@ fun EmotionalBubbleOverlay(
 
                     val colors = intArrayOf(
                         Color(0xFF66CCFF).toArgb(), // 蓝
-                        Color(0xFFFFFFFF).toArgb(), // 白 (高光)
+                        Color(0xFFFFFFFF).toArgb(), // 白
                         Color(0xFFE1BEE7).toArgb(), // 紫
                         Color(0xFF4FC3F7).toArgb()  // 闭环
                     )
@@ -220,31 +218,19 @@ fun EmotionalBubbleOverlay(
                     val paintGlow = Paint().asFrameworkPaint().apply {
                         style = android.graphics.Paint.Style.STROKE
                         strokeWidth = 6.dp.toPx()
-                        //color = Color(0xFF4FC3F7).copy(alpha = 0.4f * borderAlpha.value).toArgb()
                         this.shader = shader
                         alpha = (100 * borderAlpha.value).toInt()
                         maskFilter = BlurMaskFilter(30f, BlurMaskFilter.Blur.NORMAL)
-                        // 关键：只画一部分
                         pathEffect = android.graphics.DashPathEffect(floatArrayOf(drawLength, length), 0f)
                     }
                     drawContext.canvas.nativeCanvas.drawPath(path.asAndroidPath(), paintGlow)
 
                     // 2. 核心层：细的、亮的线条
-//                    drawPath(
-//                        path = path,
-//                        color = Color(0xFF66CCFF).copy(alpha = 0.05f),
-//                        style = Stroke(
-//                            width = 2.dp.toPx(),
-//                            cap = StrokeCap.Round,
-//                            pathEffect = PathEffect.dashPathEffect(floatArrayOf(drawLength, length), 0f)
-//                        ),
-//                        alpha = borderAlpha.value // 随整体淡入淡出
-//                    )
                     val paintLine = Paint().asFrameworkPaint().apply {
                         style = android.graphics.Paint.Style.STROKE
                         strokeWidth = 2.dp.toPx()
-                        this.shader = shader // 【关键】应用流动墨水
-                        strokeCap = android.graphics.Paint.Cap.ROUND // 圆头
+                        this.shader = shader
+                        strokeCap = android.graphics.Paint.Cap.ROUND
                         alpha = (120 * borderAlpha.value).toInt()
                         pathEffect = android.graphics.DashPathEffect(floatArrayOf(drawLength, length), 0f)
                     }
@@ -253,16 +239,14 @@ fun EmotionalBubbleOverlay(
             }
 
             // Layer 3: 文字内容
-            // 增加一点内边距，确保文字不贴边
             Text(
                 text = text,
-                // 修改为深灰偏蓝，更优雅
                 color = Color(0xFF37474F).copy(alpha = textAlpha.value),
                 fontSize = 15.sp,
                 fontWeight = FontWeight.Medium,
                 textAlign = TextAlign.Center,
                 lineHeight = 24.sp,
-                letterSpacing = 1.sp, // 增加字间距，更透气
+                letterSpacing = 1.sp,
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 10.dp)
                     .align(Alignment.Center)

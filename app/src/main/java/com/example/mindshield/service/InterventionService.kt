@@ -17,6 +17,7 @@ import androidx.lifecycle.ViewModelStoreOwner
 import androidx.lifecycle.setViewTreeLifecycleOwner
 import androidx.lifecycle.setViewTreeViewModelStoreOwner
 import androidx.savedstate.setViewTreeSavedStateRegistryOwner
+import com.example.mindshield.R
 import com.example.mindshield.ui.intervention.EdgeGlowOverlay
 import com.example.mindshield.ui.intervention.DesaturationOverlay
 import com.example.mindshield.ui.intervention.EmotionalBubbleOverlay
@@ -34,7 +35,7 @@ class InterventionService : Service() {
 
     private lateinit var windowManager: WindowManager
     private var composeView: ComposeView? = null
-    private lateinit var lifecycleOwner: MyLifecycleOwner // 复用你之前的 LifeCycleOwner
+    private lateinit var lifecycleOwner: MyLifecycleOwner
 
     override fun onBind(intent: Intent?): IBinder? = null
 
@@ -130,7 +131,7 @@ class InterventionService : Service() {
             Notification.Builder(this, channelId)
                 .setContentTitle("MindShield")
                 .setContentText("干预进行中...")
-                .setSmallIcon(android.R.drawable.ic_dialog_info) // 记得换成你的图标
+                .setSmallIcon(R.drawable.outline_ecg_heart_24)
                 .build()
         } else {
             Notification.Builder(this).build()

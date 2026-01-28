@@ -1,12 +1,12 @@
 package com.example.mindshield.data.preferences
 
-import android.R
 import android.content.Context
 import android.util.Log
-import androidx.datastore.preferences.core.*
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore("user_settings")
@@ -44,9 +44,9 @@ class UserSettings(private val context: Context) {
 
     // === Setters ===
     suspend fun setTriggerSensitivity(value: Int) {
-        Log.d("MindShield_Debug", "正在尝试写入数据: $value") // <--- 加这行
+        Log.d("MindShield_Debug", "正在尝试写入数据: $value")
         context.dataStore.edit { it[Keys.TRIGGER_SENSITIVITY] = value.coerceIn(0, 100) }
-        Log.d("MindShield_Debug", "数据写入指令已发送") // <--- 加这行
+        Log.d("MindShield_Debug", "数据写入指令已发送")
 
     }
 

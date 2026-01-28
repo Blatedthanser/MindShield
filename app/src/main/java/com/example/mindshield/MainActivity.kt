@@ -183,11 +183,9 @@ class MainActivity : ComponentActivity() {
             startMonitoringService()
         } else {
             // Failure. User said no.
-            // You should show a UI dialog explaining why you need them.
+            // Should show a UI dialog explaining why you need them.
             // For now, we just do nothing.
 
-            // [可选] 即使拒绝了权限，通常也应该检查引导状态，避免卡在白屏
-            // checkOnboardingStatus()
         }
     }
 

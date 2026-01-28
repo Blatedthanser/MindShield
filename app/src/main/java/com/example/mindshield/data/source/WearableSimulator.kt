@@ -1,29 +1,22 @@
 package com.example.mindshield.data.source
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.widget.Toast
 import com.example.mindshield.model.HrvMetrics
 import com.example.mindshield.model.WearableData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
-import kotlinx.coroutines.launch
 import kotlin.random.Random
 
 enum class SimState {
     RESTING,    // Low HR, High HRV
     EXERCISE,   // High HR, Moderate HRV (Healthy)
-    STRESS_ANGER // High HR, CRASHED HRV (Unhealthy) -> This triggers your alarm
+    STRESS_ANGER // High HR, CRASHED HRV (Unhealthy)
 }
 
 object WearableSimulator : IWearableSource {
@@ -52,7 +45,7 @@ object WearableSimulator : IWearableSource {
             // 1. Target HR Logic
             val targetHr = when (currentScenario.value) {
                 SimState.RESTING -> 65.0
-                SimState.EXERCISE -> 130.0 // Exercise usually higher HR than anger
+                SimState.EXERCISE -> 130.0 // Exercise usually has higher HR than anger
                 SimState.STRESS_ANGER -> 110.0 // Anger/Fear HR
             }
 

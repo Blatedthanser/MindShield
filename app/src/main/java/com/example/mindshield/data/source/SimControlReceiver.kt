@@ -14,7 +14,6 @@ class SimControlReceiver : BroadcastReceiver() {
             val mode = intent.getStringExtra("mode")?.uppercase()
 
             // 3. Map string to SimState
-            // Note: Ensure 'SimState' and 'WearableSimulator' are imported or accessible here
             val newState = when (mode) {
                 "STRESS" -> SimState.STRESS_ANGER
                 "EXERCISE" -> SimState.EXERCISE

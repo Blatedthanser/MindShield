@@ -1,6 +1,5 @@
 package com.example.mindshield.ui.screens
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.DeleteOutline
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -56,7 +54,7 @@ fun CalibrationScreen(
             ) {
                 IconButton(
                     onClick = { onBackClick() },
-                    modifier = Modifier.size(40.w) // 按钮整体大小（触摸区域，通常比图标大）
+                    modifier = Modifier.size(40.w) // 按钮整体大小（触摸区域）
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
@@ -143,7 +141,7 @@ fun CalibrationScreen(
 
             // Footer Info
             Text(
-                text = "Last updated: Just now\nStandard deviation implies variability range.",
+                text = "Baseline data exhibits interindividual variation.\nStandard deviation implies variability range.",
                 modifier = Modifier.fillMaxWidth(),
                 color = Stone500,
                 fontSize = 12.f,
@@ -156,7 +154,6 @@ fun CalibrationScreen(
 
 // ================= HELPER COMPONENTS =================
 
-// Custom composable to display a single metric beautifully
 @Composable
 fun StatItem(
     modifier: Modifier = Modifier,

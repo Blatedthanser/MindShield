@@ -12,8 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.delay
 
-// 这种灰色覆盖上去，会让原本鲜艳的红色/蓝色瞬间变得灰暗无光
-// Alpha 值越高，屏幕越灰，内容越看不清
+
 val WashoutGray = Color(0xFF808080)
 
 @Composable

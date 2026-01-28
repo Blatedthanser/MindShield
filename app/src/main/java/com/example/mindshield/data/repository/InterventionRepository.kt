@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import java.util.Calendar
 
 // 图表用的数据模型
-data class ChartData(val name: String, val value: Int)
+data class ChartData(val name: String, val count: Int, val percentage: Int)
 
 object InterventionRepository {
 
@@ -21,11 +21,11 @@ object InterventionRepository {
         }
     }
 
-    // 数据源：不再是 MutableStateFlow，而是直接从数据库 DAO 获取 Flow
+    // 数据源：从数据库 DAO 获取 Flow
     val events: Flow<List<InterventionEvent>>
         get() = database?.interventionDao()?.getAllEvents() ?: emptyFlow()
 
-    // 添加事件：变成 suspend 挂起函数，写入数据库
+    // 添加事件
     suspend fun addEvent(event: InterventionEvent) {
         database?.interventionDao()?.insertEvent(event)
     }
@@ -34,23 +34,32 @@ object InterventionRepository {
         database?.interventionDao()?.deleteAllEvents()
     }
 
-    fun getHourlyStressData(eventsList: List<InterventionEvent>): List<ChartData> {
-        val distribution = IntArray(24) { 0 }
-        val calendar = Calendar.getInstance()
+    fun getHourlyStressData(
+        events: List<InterventionEvent>
+    ): List<ChartData> {
 
-        eventsList.forEach { event ->
+        val labels = listOf("8am", "12pm", "4pm", "8pm", "10pm", "12am")
+        val counts = IntArray(labels.size)
+        val calendar = Calendar.getInstance()
+        events.forEach { event ->
             calendar.timeInMillis = event.timestamp
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            distribution[hour]++
-        }
 
-        // 显示关键时间点
-        val hoursToShow = listOf(8, 12, 16, 20, 22, 0)
-        return hoursToShow.map { hour ->
-            val label = if (hour == 0) "12am" else if (hour == 12) "12pm" else if (hour > 12) "${hour-12}pm" else "${hour}am"
-            ChartData(label, distribution[hour])
+            val index = when (hour) {
+                in 8 until 12 -> 0
+                in 12 until 16 -> 1
+                in 16 until 20 -> 2
+                in 20 until 22 -> 3
+                in 22 until 24 -> 4
+                else -> 5
+            }
+            counts[index]++
+        }
+        return labels.mapIndexed { i, label ->
+            ChartData(label, counts[i], 0)
         }
     }
+
 
     // 计算“most irritable apps”
     fun getAppRankingData(eventsList: List<InterventionEvent>): List<ChartData> {
@@ -61,9 +70,9 @@ object InterventionRepository {
             .map { (name, list) ->
                 val count = list.size
                 val percentage = ((count / total) * 100).toInt()
-                ChartData(name, percentage)
+                ChartData(name, count, percentage)
             }
-            .sortedByDescending { it.value }
+            .sortedByDescending { it.count }
             .take(4)
     }
 }

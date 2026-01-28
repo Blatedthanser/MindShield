@@ -22,14 +22,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.compositeOver
 import androidx.compose.ui.text.font.FontWeight
 import com.example.mindshield.data.repository.DynamicDataToShieldPage
+import com.example.mindshield.data.repository.InterventionRepository
 import com.example.mindshield.data.source.WearableSimulator
 import com.example.mindshield.domain.analysis.MentalState.*
+import com.example.mindshield.model.InterventionEvent
 import com.example.mindshield.ui.theme.*
 import f
 import w
-
+import java.util.Calendar
 @Composable
 fun ShieldScreen() {
+
+    val eventsList by InterventionRepository.events.collectAsState(initial = emptyList())
+
     val liveHr by DynamicDataToShieldPage.currentHr.collectAsState()
 
     val state by DynamicDataToShieldPage.currentState.collectAsState()
@@ -191,14 +196,14 @@ fun ShieldScreen() {
                         color = Stone300.copy(alpha = 0.5f),
                         thickness = 1.w
                     )
-
+                    val todayCount = countTodayInterventions(eventsList)
                     // Stats Row
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text("Interventions Today", color = Stone600, fontSize = 14.f)
-                        Text("3", color = Stone800, fontWeight = FontWeight.Bold, fontSize = 14.f)
+                        Text("$todayCount", color = Stone800, fontWeight = FontWeight.Bold, fontSize = 14.f)
                     }
                 }
             }
@@ -207,4 +212,28 @@ fun ShieldScreen() {
         // Bottom Spacer to lift content slightly above nav bar area if needed
         Spacer(modifier = Modifier.height(16.w))
     }
+}
+
+
+fun countTodayInterventions(events: List<InterventionEvent>): Int {
+    val calendar = Calendar.getInstance()
+
+    // 获取今天的年月日
+    val todayYear = calendar.get(Calendar.YEAR)
+    val todayMonth = calendar.get(Calendar.MONTH)
+    val todayDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+    var count = 0
+    events.forEach { event ->
+        calendar.timeInMillis = event.timestamp
+        val year = calendar.get(Calendar.YEAR)
+        val month = calendar.get(Calendar.MONTH)
+        val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+        if (year == todayYear && month == todayMonth && day == todayDay) {
+            count++
+        }
+    }
+
+    return count
 }

@@ -150,7 +150,7 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                             .fillMaxWidth()
                             .height(trackHeight) // 限制轨道高度
                             .clip(trackShape)    // 裁剪圆角
-                            .background(Color(0xFFD6D3D1)) // 1. 先画完整的灰色背景 (贯穿整个长度)
+                            .background(Color(0xFFD6D3D1)) // 先画完整的灰色背景 (贯穿整个长度)
                     ) {
                         Box(
                             modifier = Modifier
@@ -216,55 +216,8 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
                     subtitle = "Vibrate 20% slower than current HR",
                     checked = heartbeatSync,
                     onCheckedChange = { viewModel.setHeartbeatSync(it) },
-                    showDivider = false // 如果开启，下面还有一行，显示分割线
+                    showDivider = false
                 )
-//                Row(
-//                    modifier = Modifier
-//                        .fillMaxWidth()
-//                        .background(CardBeige) // Yellowish tint
-//                        .padding(16.w),
-//                    verticalAlignment = Alignment.CenterVertically,
-//                    horizontalArrangement = Arrangement.SpaceBetween
-//                ) {
-//                    Column(modifier = Modifier.weight(1f)) {
-//                        Row(verticalAlignment = Alignment.CenterVertically) {
-//                            Icon(
-//                                imageVector = Icons.Outlined.Bolt,
-//                                contentDescription = null,
-//                                tint = Color(0xFFCA8A04),
-//                                modifier = Modifier.size(14.w)
-//                            )
-//                            Spacer(modifier = Modifier.width(4.w))
-//                            Text(
-//                                "Heartbeat Sync",
-//                                fontSize = 14.f,
-//                                fontWeight = FontWeight.Medium,
-//                                color = Stone900
-//                            )
-//                        }
-//                        Text(
-//                            "Vibrate 20% slower than current HR",
-//                            fontSize = 12.f,
-//                            color = Stone500
-//                        )
-//                    }
-//                    if (heartbeatSync != null){
-//                        Switch(
-//                            checked = heartbeatSync == true,
-//                            onCheckedChange = { viewModel.setHeartbeatSync(it) },
-//                            colors = SwitchDefaults.colors(
-//                                checkedThumbColor = Color.White,
-//                                checkedTrackColor = Emerald600,
-//                                uncheckedThumbColor = Color.White,
-//                                uncheckedTrackColor = Color(0xFFA8A29E)
-//                            )
-//                        )
-//                    }
-//                    else {
-//                        //
-//                    }
-//
-//                }
             }
         }
         Spacer(modifier = Modifier.height(32.w))
@@ -291,7 +244,7 @@ fun InterventionScreen(viewModel: InterventionScreenViewModel) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xF0EFF6FF), RoundedCornerShape(12.w)) // Blue 50
+                    .background(Color(0xF0EFF6FF), RoundedCornerShape(12.w))
                     .border(1.w, Color(0xFFBFDBFE), RoundedCornerShape(12.w))
                     .padding(16.w),
                 verticalAlignment = Alignment.CenterVertically

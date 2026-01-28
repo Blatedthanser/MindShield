@@ -1,6 +1,5 @@
 package com.example.mindshield.ui.intervention
 
-import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -8,7 +7,7 @@ import androidx.savedstate.SavedStateRegistry
 import androidx.savedstate.SavedStateRegistryController
 import androidx.savedstate.SavedStateRegistryOwner
 
-// 这个类是为了让 Compose 在 Service 里能正常运行动画
+// 让 Compose 在 Service 里能正常运行动画
 class MyLifecycleOwner : LifecycleOwner, SavedStateRegistryOwner {
     private val lifecycleRegistry: LifecycleRegistry = LifecycleRegistry(this)
     private val savedStateRegistryController = SavedStateRegistryController.create(this)
